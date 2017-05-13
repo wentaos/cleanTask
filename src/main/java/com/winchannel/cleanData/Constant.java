@@ -1,4 +1,4 @@
-package com.winchannel.data;
+package com.winchannel.cleanData;
 
 public class Constant {
 

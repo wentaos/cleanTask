@@ -1,9 +1,8 @@
 package com.winchannel.cleanData;
 
-import com.winchannel.cleanUtil.IDPoolPropUtil;
-import com.winchannel.cleanUtil.OptionPropUtil;
-import com.winchannel.data.Memory;
 import com.winchannel.service.PhotoService;
+import com.winchannel.utils.cleanUtil.IDPoolPropUtil;
+import com.winchannel.utils.cleanUtil.OptionPropUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +11,7 @@ import java.util.List;
 /**
  * 新版本ID资源分发
  */
+@SuppressWarnings("all")
 @Component("distId")
 public class DistId {
     @Autowired

@@ -1,4 +1,4 @@
-package com.winchannel.utils;
+package com.winchannel.utils.sysUtils;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

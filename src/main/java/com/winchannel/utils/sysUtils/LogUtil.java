@@ -1,6 +1,5 @@
-package com.winchannel.utils;
+package com.winchannel.utils.sysUtils;
 
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,15 +24,15 @@ public class LogUtil {
 
 
     public void info(String info) {
-        logger.info(this.clazz.getName()+"-"+info);
+        logger.info(this.clazz.getSimpleName()+"-"+info);
     }
 
     public void debug(String debug){
-        logger.debug(this.clazz.getName()+"-"+debug);
+        logger.debug(this.clazz.getSimpleName()+"-"+debug);
     }
 
     public void error(String error) {
-        logger.error(this.clazz.getName()+"-"+error);
+        logger.error(this.clazz.getSimpleName()+"-"+error);
     }
 
 

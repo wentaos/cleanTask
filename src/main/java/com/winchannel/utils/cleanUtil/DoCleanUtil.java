@@ -1,4 +1,4 @@
-package com.winchannel.utils;
+package com.winchannel.utils.cleanUtil;
 
 import com.winchannel.bean.Photo;
 import com.winchannel.service.PhotoService;
@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+@SuppressWarnings("all")
 @Component("cleanUtil")
 public class DoCleanUtil {
     private static final Logger logger = LoggerFactory.getLogger(DoCleanUtil.class);
@@ -83,12 +84,12 @@ public class DoCleanUtil {
                     photo.setImgUrl(newImgUrl);// 修改img_url
                 }
                 synchronized (DoCleanUtil.class){
-                    photoService.updatePhoto(photo);
+                    photoService.updatePhoto(photo);// 修改VISIT_PHOTO表
+                    photoService.updateRptPhoto(photo);// 修改RPT_PHOTO表(一个字段imgUrl)
                 }
             }
             return true;
-        }
-        return false;
+        }        return false;
     }
 
     public void wait(int million){

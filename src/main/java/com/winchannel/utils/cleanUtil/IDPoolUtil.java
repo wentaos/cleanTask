@@ -1,4 +1,4 @@
-package com.winchannel.cleanUtil;
+package com.winchannel.utils.cleanUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +13,9 @@ public class IDPoolUtil {
      * 将 ID_POOL 转成String 以便存储到 Properties中
      */
     public static String parseID_POOL2Str(int startIndex,List<Long> ID_POOL){
+        if (ID_POOL==null || ID_POOL.size()==0){
+            return "";
+        }
         StringBuffer id_pool_str = new StringBuffer();
         for (int index=startIndex;index<ID_POOL.size()-1;index++){
             id_pool_str.append(ID_POOL.get(index)).append("-");

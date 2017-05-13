@@ -1,4 +1,4 @@
-package com.winchannel.utils;
+package com.winchannel.utils.sysUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

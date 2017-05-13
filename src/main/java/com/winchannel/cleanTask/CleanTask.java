@@ -1,14 +1,12 @@
 package com.winchannel.cleanTask;
 
 import com.winchannel.cleanData.DistId;
+import com.winchannel.cleanData.Memory;
 import com.winchannel.cleanThread.CleanThread;
-import com.winchannel.cleanUtil.IDPoolPropUtil;
-import com.winchannel.cleanUtil.IDPoolUtil;
-import com.winchannel.cleanUtil.OptionPropUtil;
-import com.winchannel.data.Memory;
-import com.winchannel.service.PhotoService;
-import com.winchannel.utils.IDInfoUtil;
-import com.winchannel.utils.LogUtil;
+import com.winchannel.utils.cleanUtil.IDPoolPropUtil;
+import com.winchannel.utils.cleanUtil.IDPoolUtil;
+import com.winchannel.utils.cleanUtil.OptionPropUtil;
+import com.winchannel.utils.sysUtils.LogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -26,8 +24,6 @@ public class CleanTask {
         logger = new LogUtil(CleanTask.class).log(CleanTask.class);
     }
 
-    @Autowired
-    private PhotoService photoService;
 
     @Autowired
     private  DistId distId;
@@ -42,16 +38,11 @@ public class CleanTask {
      */
     int HIS_THREAD_NUM = IDPoolPropUtil.getHIS_THREAD_NUM();
 
-    /**
-     * 获取上一次运行时最大ID:作为分配的起始点
-     */
-    Long HIS_MAX_ID = IDInfoUtil.getHIS_MAX_ID(HIS_THREAD_NUM);
 
     /**
      * 存放 ID_INFO 信息的文件路径配置，必须
      */
     String ID_INFO_PATH = OptionPropUtil.ID_INFO_PATH();
-
 
 
     @Scheduled(cron = "${RUN_CRON}")
@@ -80,7 +71,7 @@ public class CleanTask {
             // 需要先指定最大ID
             Long HIS_MAX_ID = IDPoolPropUtil.getHisMaxId();
             // 放到内存中
-            Memory.DIST_MAX_ID = HIS_MAX_ID==null?HIS_MAX_ID:0L;
+            Memory.DIST_MAX_ID = HIS_MAX_ID==null?0L:HIS_MAX_ID;
 
             // 到这里已经有了之前线程的ID_POOL数据，存放在ID_INFO/下的prop文件中
             // 获取之前的数据，分配给新线程

@@ -1,13 +1,13 @@
 package com.winchannel.cleanThread;
 
 import com.winchannel.cleanData.DistId;
-import com.winchannel.cleanUtil.IDPoolPropUtil;
-import com.winchannel.cleanUtil.OptionPropUtil;
-import com.winchannel.data.Memory;
+import com.winchannel.cleanData.Memory;
 import com.winchannel.service.PhotoService;
 import com.winchannel.service.impl.PhotoServiceImpl;
-import com.winchannel.utils.DoCleanUtil;
-import com.winchannel.utils.SpringContextUtil;
+import com.winchannel.utils.cleanUtil.DoCleanUtil;
+import com.winchannel.utils.cleanUtil.IDPoolPropUtil;
+import com.winchannel.utils.cleanUtil.OptionPropUtil;
+import com.winchannel.utils.sysUtils.SpringContextUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -20,6 +20,7 @@ import java.util.List;
 @Component("cleanThread")
 @Scope("prototype")// 多例
 public class CleanThread extends Thread{
+
     @Autowired
     private PhotoService photoService = (PhotoServiceImpl)SpringContextUtil.getBean("photoService");
     @Autowired

@@ -3,7 +3,6 @@ package com.winchannel.service;
 
 import com.winchannel.bean.Photo;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public interface PhotoService {
@@ -19,7 +18,7 @@ public interface PhotoService {
 
     List<Long> getPhotoIdByFcQuerys();
 
-
+    boolean updateRptPhoto(Photo photo);
 
 
 

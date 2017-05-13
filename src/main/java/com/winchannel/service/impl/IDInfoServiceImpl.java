@@ -6,6 +6,7 @@ import com.winchannel.service.IDInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+@SuppressWarnings("all")
 @Service("idInfoService")
 public class IDInfoServiceImpl implements IDInfoService {
 

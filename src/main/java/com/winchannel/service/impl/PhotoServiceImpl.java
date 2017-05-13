@@ -1,13 +1,11 @@
 package com.winchannel.service.impl;
 
 import com.winchannel.bean.Photo;
-import com.winchannel.dao.IDInfoDao;
 import com.winchannel.dao.PhotoDao;
 import com.winchannel.service.PhotoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLException;
 import java.util.List;
 
 @Service("photoService")
@@ -57,15 +55,13 @@ public class PhotoServiceImpl implements PhotoService{
 
     @Override
     public List<Long> getPhotoIdByFcQuerys() {
-
-
-
-
         return null;
     }
 
-
-
+    @Override
+    public boolean updateRptPhoto(Photo photo) {
+        return photoDao.updateRptPhoto(photo)==1?true:false;
+    }
 
     /********************原有功能**************************/
 

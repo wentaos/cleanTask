@@ -1,16 +1,13 @@
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>multiThread</groupId>
+    <groupId>cleanTask</groupId>
     <artifactId>cleanTask</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.0.1-SNAPSHOT</version>
+
     <packaging>jar</packaging>
 
-    <name>cleanTask</name>
-
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.7.5</slf4j.version>
         <guava.version>19.0</guava.version>
     </properties>
@@ -59,6 +56,7 @@
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
 
+
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid</artifactId>
@@ -71,7 +69,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-log4j</artifactId>
         </dependency>
-
 
         <!-- DOM4J-->
         <dependency>
@@ -110,6 +107,8 @@
     </dependencies>
 
     <build>
+        <!--执行build任务时，如果没有指定目标，将使用的默认值，如：在命令行中执行mvn，则相当于执行mvn install-->
+        <defaultGoal>compile</defaultGoal>
         <finalName>cleanTask</finalName>
 
         <resources>
@@ -135,7 +134,7 @@
 
         <pluginManagement>
             <plugins>
-                <!--解决Maven插件在Eclipse内执行了一系列的生命周期引起冲突 -->
+                <!--解决Maven插件在Eclipse内执行了一系列的生命周期引起冲突-->
                 <plugin>
                     <groupId>org.eclipse.m2e</groupId>
                     <artifactId>lifecycle-mapping</artifactId>
@@ -153,7 +152,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore/>
+                                        <ignore />
                                     </action>
                                 </pluginExecution>
                             </pluginExecutions>
@@ -163,6 +162,7 @@
             </plugins>
 
         </pluginManagement>
+
 
 
         <plugins>
@@ -185,7 +185,7 @@
                     <archive>
                         <manifest>
                             <mainClass>com.winchannel.App</mainClass>
-                            <!--打包时 MANIFEST.MF文件不记录的时间戳版本 -->
+                            <!--打包时 MANIFEST.MF文件不记录的时间戳版本-->
                             <useUniqueVersions>false</useUniqueVersions>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
@@ -210,7 +210,7 @@
                         <configuration>
                             <type>jar</type>
                             <includeTypes>jar</includeTypes>
-                            <!-- 在外部使用mvn命令操作并不会报错 -->
+                            <!-- 去掉打包的时间戳,在外部使用mvn命令操作并不会报错-->
                             <!--<useUniqueVersions>false</useUniqueVersions>-->
                             <outputDirectory>
                                 ${project.build.directory}/lib
@@ -237,31 +237,50 @@
                 </executions>
             </plugin>
 
-            <!-- <plugin> <artifactId>maven-assembly-plugin</artifactId> <configuration>
-                <descriptorRefs> <descriptorRef>jar-with-dependencies</descriptorRef> </descriptorRefs>
-                <archive> <manifest> <mainClass>com.winchannel.App</mainClass> </manifest>
-                </archive> </configuration> </plugin> -->
+            <!-- <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.winchannel.App</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin> -->
+
 
 
             <!-- <plugin> <artifactId>maven-compiler-plugin</artifactId> </plugin> -->
-            <!-- <plugin> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-maven-plugin</artifactId>
-                <executions> <execution> <goals> <goal>repackage</goal> </goals> </execution>
-                </executions> </plugin> -->
+            <!-- <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin> -->
 
         </plugins>
     </build>
+
 
     <repositories>
         <!-- 快 -->
         <repository>
             <id>alimaven1</id>
-            <name>aliyun maven</name>
+            <name>aliyun maven1</name>
             <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
             <!-- http://maven.aliyun.com/nexus/ 查询 -->
         </repository>
         <repository>
             <id>alimaven2</id>
-            <name>aliyun maven</name>
+            <name>aliyun maven1</name>
             <url>http://maven.aliyun.com/nexus/content/repositories/public/</url>
         </repository>
 
@@ -273,5 +292,6 @@
 
 
     </repositories>
+
 
 </project>

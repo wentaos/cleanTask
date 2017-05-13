@@ -2,9 +2,9 @@ package com.winchannel.dao.impl;
 
 import com.winchannel.bean.Photo;
 import com.winchannel.dao.PhotoDao;
-import com.winchannel.funccode.FunccodeXmlUtil;
-import com.winchannel.utils.DBUtil;
-import com.winchannel.cleanUtil.OptionPropUtil;
+import com.winchannel.utils.cleanUtil.OptionPropUtil;
+import com.winchannel.utils.fcUtils.FunccodeXmlUtil;
+import com.winchannel.utils.sysUtils.DBUtil;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -27,12 +27,6 @@ public class PhotoDaoImpl implements PhotoDao {
     private String userName;
     @Value("${spring.datasource.password}")
     private String passWord;
-
-
-    /**
-     * 是否开启使用 根据 FUNC_CODE查询PhotitId处理数据
-     */
-    boolean IS_FUNC_CODE_PART = OptionPropUtil.IS_FUNC_CODE_PART();
 
 
     /*******************************************新版本增加功能********************************************/
@@ -70,7 +64,7 @@ public class PhotoDaoImpl implements PhotoDao {
         String baseQuerySql = FunccodeXmlUtil.getBaseQuerySql();
         // 组装 baseQuerySql eg: select top 100 p.ID from (baseQuerySql);
         baseQuerySql = "SELECT TOP "+ OptionPropUtil.REDUCE_ID_NUM()+" p.ID FROM "
-                +"("+baseQuerySql+") p WHERE p.ID>"+endId;
+                +"("+baseQuerySql+") p WHERE p.ID> ORDER BY ID"+endId;
 
         logger.info("Next ID_POOL: baseQuerySql===>>>"+baseQuerySql);
 
@@ -296,27 +290,36 @@ public class PhotoDaoImpl implements PhotoDao {
     }
 
 
+    @Override
+    public int updateRptPhoto(Photo photo) {
+        Connection conn = DBUtil.getConnection(driver,dbUrl,userName,passWord);
+        PreparedStatement pstmt;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        // 设置事务为非自动提交
+        try{
+            // 设置手动处理事务
+            conn.setAutoCommit(false);
+            String sql  ="UPDATE RPT_PHOTO SET imgUrl=? WHERE imgId=?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1,photo.getImgUrl());
+            pstmt.setLong(2,photo.getId());
+            int record = pstmt.executeUpdate();
+            conn.commit();// 提交Update
+            logger.info("Update Success! 事务提交！");
+            DBUtil.closeDbResources(conn, pstmt, null);
+            return record;
+        }catch (Exception e){
+            logger.error("Dao Update Photo Error!");
+            try{
+                logger.info("Update 回滚！");
+                conn.rollback();
+            }catch (SQLException sqle){
+                sqle.printStackTrace();
+            }
+            e.printStackTrace();
+            return 0;
+        }
+    }
 
     /****************************原有功能**********************************************/
 

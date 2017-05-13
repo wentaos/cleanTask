@@ -1,15 +1,13 @@
-package com.winchannel.funccode;
+package com.winchannel.utils.fcUtils;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.junit.Test;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * 解析Func_Code SQL xml配置
@@ -17,10 +15,11 @@ import java.util.regex.Pattern;
 public class FunccodeXmlUtil {
 
     private static String resourceFilePath = "spring/config/func_code_sql.xml";
-    private static String resourceFilePath1 = "D:\\func_code_sql.xml";
-
+    private static InputStream resourceInput;
     private static String TYPE_SPE = "SPE";
     private static String TYPE_RPT = "RPT";
+
+
 
 
     public static void main(String[] args) {
@@ -48,7 +47,9 @@ public class FunccodeXmlUtil {
         SAXReader saxReader = new SAXReader();
         Document document = null;
         try {
-            document = saxReader.read(new File(resourceFilePath1));
+            resourceInput = FunccodeXmlUtil.class.getClassLoader().getResourceAsStream(resourceFilePath);
+            document = saxReader.read(resourceInput);
+//            document = saxReader.read(new File(resourceFilePath));
         } catch (DocumentException e) {
             e.printStackTrace();
         }
@@ -91,13 +92,15 @@ public class FunccodeXmlUtil {
         SAXReader saxReader = new SAXReader();
         Document document = null;
         try {
-            document = saxReader.read(new File(resourceFilePath1));
+            resourceInput = FunccodeXmlUtil.class.getClassLoader().getResourceAsStream(resourceFilePath);
+            document = saxReader.read(resourceInput);
         } catch (DocumentException e) {
             e.printStackTrace();
         }
         Element root_querys = document.getRootElement();
         Element baseQuery = root_querys.element("baseQuery");
         String baseQuerySql = baseQuery.getText();
+        baseQuerySql = cleanSql(baseQuerySql);
         baseQuerySql = checkBaseQueryOrder(baseQuerySql);
         return baseQuerySql;
     }
@@ -151,15 +154,29 @@ public class FunccodeXmlUtil {
         return sql;
     }
 
+    /**
+     * 检查baseQuerySql中是否有order by xxx语句
+     * 替换成 ROW_NUMBER() over(order by xxx)
+     * SELECT ROW_NUMBER() over(order by ID) AS rn,ID,...
+     * 没有的话，加上 ROW_NUMBER() over(order by xxx)
+     */
     public static String checkBaseQueryOrder(String baseQuerySql){
-        if(baseQuerySql.contains("order\\s+by\\s+ID")
-                || baseQuerySql.contains("order\\s+by\\s+id")
-                || baseQuerySql.contains("order\\s+by\\s+Id")
-                || baseQuerySql.contains("order\\s+by\\s+iD")
-                || baseQuerySql.contains("order\\s+by\\s+photoId")
-                || baseQuerySql.contains("order\\s+by\\s+photoID")){
+
+        if(baseQuerySql.trim().toLowerCase().contains("order\\s+by\\s+[0-9a-zA-Z]{1,100}")
+                && !baseQuerySql.trim().toLowerCase().contains("row_number(")){
+
+            // 去掉自定义的order by xxx
+            baseQuerySql = baseQuerySql.replace("order\\s+by\\s+[0-9a-zA-Z]{1,100}","");
+            // 使用 SELECT ROW_NUMBER() over(order by ID) AS rn,ID,... 形式排序
+            if(baseQuerySql.contains("SELECT")){
+                baseQuerySql = baseQuerySql.replace("","SELECT ROW_NUMBER() over(order by ID) AS rn,");
+            }else {
+                baseQuerySql = baseQuerySql.replace("select","SELECT ROW_NUMBER() over(order by ID) AS rn,");
+            }
+
             return baseQuerySql;
         }
+
         baseQuerySql += " ORDER BY ID";// 根据ID排序
         return baseQuerySql;
     }

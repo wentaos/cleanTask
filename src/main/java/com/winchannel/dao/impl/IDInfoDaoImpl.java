@@ -2,10 +2,10 @@ package com.winchannel.dao.impl;
 
 
 import com.winchannel.bean.Photo;
+import com.winchannel.cleanData.Constant;
 import com.winchannel.dao.IDInfoDao;
-import com.winchannel.data.Constant;
-import com.winchannel.utils.DBUtil;
-import com.winchannel.cleanUtil.OptionPropUtil;
+import com.winchannel.utils.cleanUtil.OptionPropUtil;
+import com.winchannel.utils.sysUtils.DBUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 

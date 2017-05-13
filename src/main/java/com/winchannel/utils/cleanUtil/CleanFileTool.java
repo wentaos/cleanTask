@@ -1,18 +1,11 @@
-package com.winchannel.utils;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import com.winchannel.cleanUtil.OptionPropUtil;
+package com.winchannel.utils.cleanUtil;
 
 import com.winchannel.bean.Photo;
 import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 内容中：涉及到的路径是基于 D:/aaa/bbb/2017-02-12/j23h43h24234324h32ui4hf.jpg 这种格式
@@ -22,20 +15,6 @@ import org.slf4j.LoggerFactory;
  */
 public class CleanFileTool {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(CleanFileTool.class);
-
-    /**
-     * 这些静态字段可专用于 在获取到的pathMap 中当作key获取对应的path
-     * 暂时用不到
-     */
-    @Deprecated
-    public static String FILE_NAME_PATH = "FILE_NAME_PATH";
-    @Deprecated
-    public static String DATE_PATH = "DATE_PATH";
-    @Deprecated
-    public static String DATE_FULL_PATH = "DATE_FULL_PATH";
-    @Deprecated
-    public static String HEAD_PATH = "HEAD_PATH";
-
 
     /**
      * 判断对应的 FUNC_CODE + DATE + photoname 是否存在

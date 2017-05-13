@@ -13,24 +13,31 @@
 
     <!--
     自定义的VISIT_PHOTO结果集，程序会根据该结果集进行遍历处理PHOTO数据
-    最好写上 Order by ID
     注意：该查询不使用别名
     ID,IMG_ID,IMG_URL,ABSOLUTE_PATH 为基本字段。目前不需要改动，只需要些查询条件即可
     -->
     <!--如果想处理哪些 FUNC_CODE的数据，请使用sql关联查询，通用性更高，更灵活
     示例：请根据VISIT_PHOTO表中的IMG_ID字段关联
+
         SELECT
             ID,IMG_ID,IMG_URL,ABSOLUTE_PATH
         FROM
             VISIT_PHOTO
         WHERE IMG_ID in (
-            SELECT IMG_ID AS IMG_ID FROM MS_VISIT_ACVT WHERE FUNC_CODE='FAC_500'
+            SELECT b.IMG_ID AS IMG_ID from (
+                SELECT SELECT ROW_NUMBER() over(order by ID) AS rn,IMG_ID AS IMG_ID FROM MS_VISIT_ACVT WHERE FUNC_CODE='FAC_500'
+            ) b
         )
+
+    -->
+    <!--注意：
+        不要使用 ORDER BY
+        排序查询一律使用 SELECT ROW_NUMBER() over(order by ID) AS rn,形式
     -->
     <baseQuery>
         SELECT
-            ID,IMG_ID,IMG_URL,ABSOLUTE_PATH
-        FROM VISIT_PHOTO
+        ID,IMG_ID,IMG_URL,ABSOLUTE_PATH
+        FROM VISIT_PHOTO_T
         WHERE ID>1000
     </baseQuery>
 

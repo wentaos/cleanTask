@@ -2,7 +2,6 @@ package com.winchannel.dao;
 
 import com.winchannel.bean.Photo;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public interface PhotoDao {
@@ -19,7 +18,7 @@ public interface PhotoDao {
 
     List<Long> selectNextIdPoolFromBaseQueryByEndId(Long endId);
 
-
+    int updateRptPhoto(Photo photo);
 
     /**
      *根据img_id查询Photo的id数据

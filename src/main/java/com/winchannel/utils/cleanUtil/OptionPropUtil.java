@@ -1,6 +1,6 @@
-package com.winchannel.cleanUtil;
+package com.winchannel.utils.cleanUtil;
 
-import com.winchannel.data.Constant;
+import com.winchannel.cleanData.Constant;
 
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -186,42 +186,6 @@ public class OptionPropUtil {
         }
     }
 
-
-    /**
-     * IS_FUNC_CODE_PART
-     * 是否处理一部分 FUNC_CODE
-     */
-    public static boolean IS_FUNC_CODE_PART(){
-        try{
-            String IS_FUNC_CODE_PART = getValue(Constant.IS_FUNC_CODE_PART);
-            if(IS_FUNC_CODE_PART!=null && IS_FUNC_CODE_PART.trim().length()>0){
-                return Boolean.parseBoolean(IS_FUNC_CODE_PART.trim().toLowerCase());
-            }else {
-                return false;
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    /**
-     * FUNC_CODE_LIST
-     * 获取 FUNC_CODE_LIST
-     */
-    public static String[] FUNC_CODE_LIST(){
-        String[] funcodes = null;
-        try{
-            String FUNC_CODE_LIST = getValue(Constant.FUNC_CODE_LIST);
-            if(FUNC_CODE_LIST!=null && FUNC_CODE_LIST.trim().length()>0){
-                funcodes = FUNC_CODE_LIST.trim().split(",");
-            }
-            return funcodes;
-        }catch (Exception e){
-            e.printStackTrace();
-            return funcodes;
-        }
-    }
 
 
 

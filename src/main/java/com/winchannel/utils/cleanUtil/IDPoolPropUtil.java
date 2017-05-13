@@ -1,7 +1,7 @@
-package com.winchannel.cleanUtil;
+package com.winchannel.utils.cleanUtil;
 
-import com.winchannel.data.Constant;
-import com.winchannel.data.Memory;
+import com.winchannel.cleanData.Constant;
+import com.winchannel.cleanData.Memory;
 
 import java.io.*;
 import java.util.List;
@@ -136,6 +136,10 @@ public class IDPoolPropUtil {
     public static String getValue(String resourceFilePath,String key){
         String value = null;
         try{
+            // 先检查文件是否存在
+            if(!new File(resourceFilePath).exists()){
+                return null;
+            }
             Properties prop = new Properties();
             InputStream in = new FileInputStream(resourceFilePath);
             prop.load(in);

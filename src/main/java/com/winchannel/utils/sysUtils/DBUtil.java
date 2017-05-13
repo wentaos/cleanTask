@@ -1,4 +1,4 @@
-package com.winchannel.utils;
+package com.winchannel.utils.sysUtils;
 
 import java.sql.*;
 
