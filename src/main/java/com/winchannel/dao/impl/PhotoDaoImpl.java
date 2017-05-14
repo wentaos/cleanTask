@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
+import javax.swing.text.html.Option;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +30,10 @@ public class PhotoDaoImpl implements PhotoDao {
     private String passWord;
 
 
+
     /*******************************************新版本增加功能********************************************/
 
+    String DB_TYPE = OptionPropUtil.DB_TYPE();
 
 
     /**
@@ -61,10 +64,21 @@ public class PhotoDaoImpl implements PhotoDao {
     @Override
     public List<Long> selectNextIdPoolFromBaseQueryByEndId(Long endId) {
         List<Long> ID_POOL = null;
+        int REDUCE_ID_NUM = OptionPropUtil.REDUCE_ID_NUM();
         String baseQuerySql = FunccodeXmlUtil.getBaseQuerySql();
-        // 组装 baseQuerySql eg: select top 100 p.ID from (baseQuerySql);
-        baseQuerySql = "SELECT TOP "+ OptionPropUtil.REDUCE_ID_NUM()+" p.ID FROM "
-                +"("+baseQuerySql+") p WHERE p.ID> ORDER BY ID"+endId;
+
+        if ("SQLSERVER".equals(DB_TYPE)){
+            // 组装 baseQuerySql eg: select top 100 p.ID from (baseQuerySql);
+            baseQuerySql = "SELECT TOP "+ REDUCE_ID_NUM +" p.ID FROM "
+                    +"("+baseQuerySql+") p WHERE p.ID> "+endId+" ORDER BY ID";
+        }else if ("ORACLE".equals(DB_TYPE)){
+            baseQuerySql = "SELECT row_number() over(order by p.ID) AS rn,p.ID FROM "
+                    +"("+baseQuerySql+") p WHERE p.ID>"+endId+" rownum<="+REDUCE_ID_NUM;
+        }else if ("MYSQL".equals(DB_TYPE)){
+            baseQuerySql = "SELECT p.ID FROM "
+                    +"("+baseQuerySql+") p WHERE p.ID>"+endId+" ORDER BY p.ID LIMIT "+ REDUCE_ID_NUM;
+        }
+
 
         logger.info("Next ID_POOL: baseQuerySql===>>>"+baseQuerySql);
 
@@ -357,27 +371,20 @@ public class PhotoDaoImpl implements PhotoDao {
 
 
     /**
-     * 这是查询全部的
-     * @return
      */
     @Override
-    public List<Photo> selectPhotoList() {
+    public List<Photo> selectFirstPhotoOne() {
         Connection conn = DBUtil.getConnection(driver,dbUrl,userName,passWord);
         PreparedStatement pstmt;
         List<Photo> photoList = new ArrayList<Photo>();
         String table_name = OptionPropUtil.IS_TEST()?"VISIT_PHOTO_T":"VISIT_PHOTO";
         try {
             // 按照 ID 排序得到第一个
-        	String oneSql = "";
-        	if(OptionPropUtil.IS_MYSQL()){
-        		oneSql = "SELECT ID,IMG_ID,IMG_URL,ABSOLUTE_PATH from "+table_name+" ORDER BY ID LIMIT 1";
-        	} else if (OptionPropUtil.IS_SQLSERVER()){
-        		oneSql = "SELECT top 1 ID,IMG_ID,IMG_URL,ABSOLUTE_PATH from "+table_name+" ORDER BY ID";
-        	}
+        	String oneSql = "SELECT ID,IMG_ID,IMG_URL,ABSOLUTE_PATH from "+table_name+" ORDER BY ID";
             pstmt = conn.prepareStatement(oneSql);
             ResultSet rs = pstmt.executeQuery();
 
-            while (rs.next()) {
+            if (rs.next()) {
                 Photo photo = new Photo();
                 photo.setId(rs.getLong("ID"));
                 photo.setImgId(rs.getString("IMG_ID"));
@@ -512,13 +519,7 @@ public class PhotoDaoImpl implements PhotoDao {
         String table_name = OptionPropUtil.IS_TEST()?"VISIT_PHOTO_T":"VISIT_PHOTO";
         
         try{
-            String oneSql = "SELECT top 1 max(ID) ID FROM "+table_name+"";
-        	if(OptionPropUtil.IS_MYSQL()){
-        		oneSql = "SELECT max(ID) ID FROM "+table_name+" LIMIT 1";
-        	} else if (OptionPropUtil.IS_SQLSERVER()){
-        		oneSql = "SELECT top 1 max(ID) ID FROM "+table_name+"";
-        	}
-        	
+            String oneSql = "SELECT max(ID) ID FROM "+table_name+"";
             pstmt = conn.prepareStatement(oneSql);
             ResultSet rs = pstmt.executeQuery();
             if(rs.next()){
@@ -550,11 +551,8 @@ public class PhotoDaoImpl implements PhotoDao {
         
         try{
             String sql = "";
-            if(OptionPropUtil.IS_MYSQL()){
-            	sql = "SELECT min(ID) ID FROM "+table_name+" LIMIT 1";
-        	} else if (OptionPropUtil.IS_SQLSERVER()){
-        		sql = "SELECT top 1 min(ID) ID FROM "+table_name+"";
-        	}
+            sql = "SELECT min(ID) ID FROM "+table_name+"";
+
             pstmt = conn.prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery();
             if(rs.next()){

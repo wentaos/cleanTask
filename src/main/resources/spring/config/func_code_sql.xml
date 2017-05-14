@@ -31,7 +31,7 @@
 
     -->
     <!--注意：
-        不要使用 ORDER BY
+        排序不要使用 ORDER BY
         排序查询一律使用 SELECT ROW_NUMBER() over(order by ID) AS rn,形式
     -->
     <baseQuery>

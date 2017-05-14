@@ -37,7 +37,7 @@ public interface PhotoDao {
      */
     Photo selectPhotoOne(long id);
 
-    List<Photo> selectPhotoList();
+    List<Photo> selectFirstPhotoOne();
 
     List<Photo> selectPhotoListByBaseQuery();
 

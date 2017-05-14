@@ -79,7 +79,8 @@ public class FunccodeXmlUtil {
         rptSql = cleanSql(rptSql);
         Element baseQuery = root_querys.element("baseQuery");
         String baseQuerySql = baseQuery.getText();
-        sqlMap.put("baseQuerySql",checkBaseQueryOrder(baseQuerySql));
+//        baseQuerySql = checkBaseQueryOrder(baseQuerySql);
+        sqlMap.put("baseQuerySql",baseQuerySql);
         if(rptSql.trim().length()!=0){
             sqlMap.put("rptSql", rptSql);
         }
@@ -101,7 +102,7 @@ public class FunccodeXmlUtil {
         Element baseQuery = root_querys.element("baseQuery");
         String baseQuerySql = baseQuery.getText();
         baseQuerySql = cleanSql(baseQuerySql);
-        baseQuerySql = checkBaseQueryOrder(baseQuerySql);
+//        baseQuerySql = checkBaseQueryOrder(baseQuerySql);
         return baseQuerySql;
     }
 

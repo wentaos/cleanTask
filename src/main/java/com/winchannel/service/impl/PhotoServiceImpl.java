@@ -73,7 +73,7 @@ public class PhotoServiceImpl implements PhotoService{
 
     @Override
     public Photo getFirstPhotoOne() {
-        List<Photo> photoList = photoDao.selectPhotoList();
+        List<Photo> photoList = photoDao.selectFirstPhotoOne();
         if(photoList!=null && photoList.size()>0){
             return photoList.get(0);
         }
