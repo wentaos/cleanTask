@@ -23,7 +23,7 @@ public interface PhotoDao {
     /**
      *根据img_id查询Photo的id数据
      */
-    List<Long> selectPhotoIdListBtImgId(String imgId);
+    List<Long> selectPhotoIdListByImgId(String imgId);
 
     List<String> selectImgIdListByFcQuery(String fcQuerySql);
 

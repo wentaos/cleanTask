@@ -14,6 +14,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 @Repository
@@ -43,6 +45,20 @@ public class PhotoDaoImpl implements PhotoDao {
     public Long selectMaxIdByBaseQuery() {
         // 代替查询全部Photo数据的sql
         String baseQuerySql = FunccodeXmlUtil.getBaseQuerySql();
+
+        // 获取到第一个where
+        Pattern p = Pattern.compile("[Ff][Rr][Oo][Mm]");
+        Matcher m = p.matcher(baseQuerySql);
+        if (m.find()){
+            String g = m.group();
+            int start = m.start();
+            System.out.println(start+"-"+g);
+            String sqlTail = baseQuerySql.substring(start);
+            baseQuerySql = "SELECT MAX(ID) maxId FROM "+sqlTail;
+        }else {
+            throw new RuntimeException("SQL 语法有毛病啊！");
+        }
+
         Connection conn = DBUtil.getConnection(driver,dbUrl,userName,passWord);
         PreparedStatement pstmt = null;
         Long maxId = null;
@@ -51,7 +67,7 @@ public class PhotoDaoImpl implements PhotoDao {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                maxId = rs.getLong("ID");
+                maxId = rs.getLong("maxId");
             }
             DBUtil.closeDbResources(conn, pstmt, rs);
         } catch (SQLException e) {
@@ -277,7 +293,7 @@ public class PhotoDaoImpl implements PhotoDao {
 
 
     @Override
-    public List<Long> selectPhotoIdListBtImgId(String imgId) {
+    public List<Long> selectPhotoIdListByImgId(String imgId) {
         Connection conn = DBUtil.getConnection(driver,dbUrl,userName,passWord);
         PreparedStatement pstmt = null;
         ResultSet rs = null;

@@ -155,6 +155,11 @@ public class FunccodeXmlUtil {
         return sql;
     }
 
+
+
+
+
+//    暂时不使用，在xml配置中配置严格的sql
     /**
      * 检查baseQuerySql中是否有order by xxx语句
      * 替换成 ROW_NUMBER() over(order by xxx)
