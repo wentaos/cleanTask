@@ -77,7 +77,12 @@ public class CleanThread extends Thread{
             // 根据ID_POOL进行处理数据
             for (int i=0;i<ID_POOL.size();i++) {
                 long ID = ID_POOL.get(i);
-                boolean cleanSHUN = cleanUtil.cleanPathHandler(ID);
+                boolean cleanSHUN = false;
+                // 每个处理进程需要加锁
+                synchronized (CleanThread.class){
+                    cleanSHUN  =cleanUtil.cleanPathHandler(ID);
+                }
+
                 if (cleanSHUN) {
                     id_pool_save_point_num++;
                 }

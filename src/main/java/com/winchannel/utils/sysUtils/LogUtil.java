@@ -12,11 +12,9 @@ public class LogUtil {
 
 
     public LogUtil(){}
-    public LogUtil(Class clazz){
-        this.clazz = clazz;
-    }
 
     public LogUtil log(Class clazz){
+        this.clazz = clazz;
         logger = LoggerFactory.getLogger(clazz);
         this.setLogger(logger);
         return this;

@@ -79,23 +79,21 @@ public class CleanFileTool {
             String date = getDatePathFromUrl(afterStr);
             if(date!=null && date.trim().length()>0) {
                 String funccode_id = afterStr.split(flag + date)[0];
-                if(trueFuncCode.toLowerCase().trim().equals(
-                        funccode_id.toLowerCase().trim()
-                )){// 日期前面的目录 不是错误的目录，和正确的FUNC_CODE一样
+                // 日期前面的目录 不是错误的目录，和正确的FUNC_CODE一样
+                if (funccode_id.toLowerCase().trim().startsWith((trueFuncCode.toLowerCase().trim()))
+                        && funccode_id.trim().length()<32){// 太长就是错误的路径
                     return true;
                 }else {
                     return false;
                 }
+
             }
 
         }else if(flag_num==1){// afterStr 说明剩下的格式是: date/xxx.jpg
 
-            String F0A_1x2x3x = afterStr.split(flag)[0];
             // 先得到日期：如果防寒日期，则不是正确的路径格式
             String date = getDatePathFromUrl(afterStr);
             if(date!=null){
-                return false;
-            }else if(F0A_1x2x3x!=null && F0A_1x2x3x.startsWith("F") && F0A_1x2x3x.length()>10){
                 return false;
             }
 
@@ -135,19 +133,7 @@ public class CleanFileTool {
                 code_date_path=funcCodePath+ File.separator+date;
                 code_date_path = createPath(PHOTO_PATH+ File.separator +code_date_path);
             }
-            /*else{// 如果是意外情况的目录，没有date目录
-                if(imgUrl.contains("dot2B")){
-                    String afterStr = imgUrl.split("photos"+"dot2B")[1];
-                    date_OR_F0A_1x2x3x = afterStr.split("dot2B")[0];
-                    code_date_path=funcCodePath+ File.separator+date_OR_F0A_1x2x3x;
-                    code_date_path = createPath(PHOTO_PATH+ File.separator +code_date_path);
-                }else if(imgUrl.contains("photos/")){// 老数据使用 / 分割
-                    String afterStr = imgUrl.split("photos"+"/")[1];
-                    date_OR_F0A_1x2x3x = afterStr.split("/")[0];
-                    code_date_path=funcCodePath+ File.separator+date_OR_F0A_1x2x3x;
-                    code_date_path = createPath(PHOTO_PATH+ File.separator +code_date_path);
-                }
-            }*/
+
         }
         return date;
     }

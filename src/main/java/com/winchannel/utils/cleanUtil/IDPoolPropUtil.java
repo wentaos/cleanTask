@@ -72,7 +72,7 @@ public class IDPoolPropUtil {
         String propName = threadName+"_ID_POOL"+propType;// eg: Thread_1_ID_POOL.properties
         String idpoolResourcePath = ID_INFO_PATH+propName;
         String idpools = getValue(idpoolResourcePath,threadName+"_ID_POOL");
-        return IDPoolUtil.parseStr2ID_POOL(idpools);
+        return IDPoolUtil.parseStr2ID_POOL(idpools!=null?idpools:"");
     }
 
 

@@ -19,11 +19,7 @@ import java.util.List;
  */
 @Component
 public class CleanTask {
-    LogUtil logger;
-    public CleanTask() {
-        logger = new LogUtil(CleanTask.class).log(CleanTask.class);
-    }
-
+    private LogUtil logger = new LogUtil().log(CleanTask.class);
 
     @Autowired
     private  DistId distId;
@@ -71,7 +67,7 @@ public class CleanTask {
             // 需要先指定最大ID
             Long HIS_MAX_ID = IDPoolPropUtil.getHisMaxId();
             // 放到内存中
-            Memory.DIST_MAX_ID = HIS_MAX_ID==null?0L:HIS_MAX_ID;
+            Memory.DIST_MAX_ID = HIS_MAX_ID!=null?HIS_MAX_ID:0L;
 
             // 到这里已经有了之前线程的ID_POOL数据，存放在ID_INFO/下的prop文件中
             // 获取之前的数据，分配给新线程
@@ -88,7 +84,7 @@ public class CleanTask {
             // 需要先指定最大ID
             Long HIS_MAX_ID = IDPoolPropUtil.getHisMaxId();
             // 放到内存中
-            Memory.DIST_MAX_ID = HIS_MAX_ID==null?HIS_MAX_ID:0L;
+            Memory.DIST_MAX_ID = HIS_MAX_ID!=null?HIS_MAX_ID:0L;
 
             // 先分配历史线程数据
             for (int i = 1; i <= HIS_THREAD_NUM; ++i) {
@@ -113,7 +109,7 @@ public class CleanTask {
             // 需要先指定最大ID
             Long HIS_MAX_ID = IDPoolPropUtil.getHisMaxId();
             // 放到内存中
-            Memory.DIST_MAX_ID = HIS_MAX_ID==null?HIS_MAX_ID:0L;
+            Memory.DIST_MAX_ID = HIS_MAX_ID!=null?HIS_MAX_ID:0L;
             // 分配 THREAD_NUM-1 个线程，剩下最后一个解决没有分配完的历史线程数据
             for(int i=1;i<THREAD_NUM;i++){
                 String threadName = "Thread_"+i;

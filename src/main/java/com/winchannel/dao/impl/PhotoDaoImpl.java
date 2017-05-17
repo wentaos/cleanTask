@@ -5,11 +5,10 @@ import com.winchannel.dao.PhotoDao;
 import com.winchannel.utils.cleanUtil.OptionPropUtil;
 import com.winchannel.utils.fcUtils.FunccodeXmlUtil;
 import com.winchannel.utils.sysUtils.DBUtil;
-import org.apache.log4j.Logger;
+import com.winchannel.utils.sysUtils.LogUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
-import javax.swing.text.html.Option;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +19,7 @@ import java.util.regex.Pattern;
 
 @Repository
 public class PhotoDaoImpl implements PhotoDao {
-    private static Logger logger = Logger.getLogger(PhotoDaoImpl.class);
+    private static LogUtil logger = new LogUtil().log(PhotoDaoImpl.class);
 
     @Value("${spring.datasource.url}")
     private String dbUrl;
@@ -46,18 +45,21 @@ public class PhotoDaoImpl implements PhotoDao {
         // 代替查询全部Photo数据的sql
         String baseQuerySql = FunccodeXmlUtil.getBaseQuerySql();
 
+        logger.info("原 baseQuerySql:"+baseQuerySql);
+
         // 获取到第一个where
         Pattern p = Pattern.compile("[Ff][Rr][Oo][Mm]");
         Matcher m = p.matcher(baseQuerySql);
         if (m.find()){
             String g = m.group();
             int start = m.start();
-            System.out.println(start+"-"+g);
             String sqlTail = baseQuerySql.substring(start);
-            baseQuerySql = "SELECT MAX(ID) maxId FROM "+sqlTail;
+            baseQuerySql = "SELECT MAX(ID) maxId  "+sqlTail;
         }else {
             throw new RuntimeException("SQL 语法有毛病啊！");
         }
+
+        logger.info("处理后 baseQuerySql:"+baseQuerySql);
 
         Connection conn = DBUtil.getConnection(driver,dbUrl,userName,passWord);
         PreparedStatement pstmt = null;
@@ -73,6 +75,7 @@ public class PhotoDaoImpl implements PhotoDao {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        logger.info("得到maxId: "+maxId);
         return maxId;
     }
 
@@ -204,7 +207,11 @@ public class PhotoDaoImpl implements PhotoDao {
     //    select imgId AS PHOTO_ID,bizDate AS BIZ_DATE,funcCode AS FUNC_CODE,imgUrl AS IMG_URL from RPT_PHOTO WHERE bizDate='${bizDate}' AND imgId=${imgId}
     public String selectFuncCodeFromRPT(String sql,String bizDate,long photoId) {
         String fixSql = "SELECT funcCode AS FUNC_CODE FROM RPT_PHOTO WHERE bizDate='${bizDate}' AND imgId=${photoId}";
+        String bakSql = "SELECT funcCode AS FUNC_CODE FROM RPT_PHOTO WHERE imgId=${photoId}";// 如果bizDate为空
         sql = fixSql;// 目前sql是固定的，不实用配置文件配置，后续扩展的话再去掉该行赋值
+        if (bizDate==null && bizDate.trim().length()==0){
+            sql = bakSql;
+        }
         Connection conn = DBUtil.getConnection(driver,dbUrl,userName,passWord);
         Statement stmt = null;
         ResultSet rs = null;
@@ -212,10 +219,10 @@ public class PhotoDaoImpl implements PhotoDao {
         try {
             if(sql!=null && sql.trim().length()>0){
                 if(sql.contains("${photoId}")){
-                    sql.replace("${photoId}",photoId+"");
+                    sql = sql.replace("${photoId}",photoId+"");
                 }
                 if(sql.contains("${bizDate}")){
-                    sql.replace("${bizDate}",bizDate);
+                    sql = sql.replace("${bizDate}",bizDate);
                 }
                 stmt = conn.createStatement();
                 rs = stmt.executeQuery(sql);

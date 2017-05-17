@@ -79,6 +79,8 @@ public class FunccodeXmlUtil {
         rptSql = cleanSql(rptSql);
         Element baseQuery = root_querys.element("baseQuery");
         String baseQuerySql = baseQuery.getText();
+        baseQuerySql = cleanSql(baseQuerySql);
+
 //        baseQuerySql = checkBaseQueryOrder(baseQuerySql);
         sqlMap.put("baseQuerySql",baseQuerySql);
         if(rptSql.trim().length()!=0){
@@ -148,6 +150,8 @@ public class FunccodeXmlUtil {
     public static String cleanSql(String sql) {
         sql = sql.replace("\n", " ");
         sql = sql.replace("\t", " ");
+        sql = sql.replace("&lt;", "<");
+        sql = sql.replace("&gt;", ">");
         sql = sql.trim();
         if(sql.contains(";")){
             sql = sql.replace(";","");

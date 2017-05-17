@@ -52,7 +52,10 @@ public class DistId {
                 IS_STOP = false;
             }*/
             // 将刚分配的最大ID作为当前已分配的最大ID
-            Memory.DIST_MAX_ID = ID_POOL.get(ID_POOL.size()-1);
+            if (ID_POOL!=null && ID_POOL.size()>0){
+                Memory.DIST_MAX_ID = ID_POOL.get(ID_POOL.size()-1);
+            }
+
             // 分配后保存成历史最大ID
             IDPoolPropUtil.saveMaxIdPoint();
         }

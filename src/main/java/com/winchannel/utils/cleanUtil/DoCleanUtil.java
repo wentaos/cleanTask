@@ -21,9 +21,16 @@ public class DoCleanUtil {
      */
     public boolean cleanPathHandler(long curr_id) {
 
+        System.out.println("处理ID ========>>> "+curr_id);
+        System.out.println("处理ID ========>>> "+curr_id);
+        System.out.println("处理ID ========>>> "+curr_id);
+
         Photo photo = null;
         synchronized (DoCleanUtil.class){
             photo = photoService.getPhotoOne(curr_id);
+           // 获取其bizDate
+            String date = CleanFileTool.getDatePathFromUrl(photo.getImgUrl());
+            photo.setBizDate(date);
         }
 
         if (photo == null) {
@@ -40,7 +47,9 @@ public class DoCleanUtil {
         // 根据Photo的IMG_ID 去查询其他表中的 FUNC_CODE信息
         String FUNC_CODE = "";
         synchronized (DoCleanUtil.class){
-            FUNC_CODE = photoService.getFuncCodeByPhoto(photo);
+            // 使用新版本查询方法
+            FUNC_CODE = photoService.getFuncCodeByXml(photo);
+//            FUNC_CODE = photoService.getFuncCodeByPhoto(photo);
         }
 
         // 获取到 FUNC_CODE

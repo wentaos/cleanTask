@@ -19,6 +19,16 @@
     <!--如果想处理哪些 FUNC_CODE的数据，请使用sql关联查询，通用性更高，更灵活
     示例：请根据VISIT_PHOTO表中的IMG_ID字段关联
 
+        简单：直接查询
+
+        SELECT
+        ID,IMG_ID,IMG_URL,ABSOLUTE_PATH
+        FROM VISIT_PHOTO
+        WHERE ID &lt;= 1000
+
+
+        关联业务表：
+
         SELECT
             ID,IMG_ID,IMG_URL,ABSOLUTE_PATH
         FROM
@@ -29,16 +39,35 @@
             ) b
         )
 
+        关联RPT_PHOTO表
+        SELECT
+            ID,IMG_ID,IMG_URL,ABSOLUTE_PATH
+        FROM
+            VISIT_PHOTO
+        WHERE ID in (
+            SELECT b.PHOTO_ID AS ID from (
+                SELECT
+                	ROW_NUMBER() over(order by ID) AS rn, imgId AS PHOTO_ID
+                FROM RPT_PHOTO WHERE funcCode='FAC_093'
+            ) b
+        )
+
+
+
     -->
     <!--注意：
         排序不要使用 ORDER BY
         排序查询一律使用 SELECT ROW_NUMBER() over(order by ID) AS rn,形式
+        < 使用 &lt;
+        > 使用 &gt;
     -->
     <baseQuery>
+
         SELECT
         ID,IMG_ID,IMG_URL,ABSOLUTE_PATH
-        FROM VISIT_PHOTO_T
-        WHERE ID>1000
+        FROM VISIT_PHOTO
+        WHERE ID &lt;= 1000
+
     </baseQuery>
 
 
