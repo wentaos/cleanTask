@@ -565,6 +565,7 @@ public class PhotoDaoImpl implements PhotoDao {
 
 
 
+
 	@Override
 	public long selectPhotoMinId() {
 		Connection conn = DBUtil.getConnection(driver,dbUrl,userName,passWord);

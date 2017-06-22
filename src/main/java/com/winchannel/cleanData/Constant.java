@@ -70,4 +70,9 @@ public class Constant {
 	 */
 	public static final String FUNC_CODE_LIST = "FUNC_CODE_LIST";
 
+	/**
+	 * 是否需要更新数据库
+	 */
+	public static final String IS_UPDATE_DB = "IS_UPDATE_DB";
+
 }

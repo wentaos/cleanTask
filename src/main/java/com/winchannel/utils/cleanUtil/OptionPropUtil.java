@@ -1,5 +1,6 @@
 package com.winchannel.utils.cleanUtil;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import com.winchannel.cleanData.Constant;
 
 import java.io.FileOutputStream;
@@ -187,7 +188,22 @@ public class OptionPropUtil {
     }
 
 
+    /**
+     * IS_UPDATE_DB
+     * 是否需要更新数据库
+     */
+    public static boolean IS_UPDATE_DB(){
+        try{
+            String IS_UPDATE_DB = getValue(Constant.IS_UPDATE_DB);
+            if(IS_UPDATE_DB!=null && IS_UPDATE_DB.length()>0){
+                return Boolean.parseBoolean(IS_UPDATE_DB);
+            }
 
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return true;
+    }
 
 
 

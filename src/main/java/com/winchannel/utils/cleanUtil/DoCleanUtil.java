@@ -92,9 +92,13 @@ public class DoCleanUtil {
                 if(newImgUrl!=null){
                     photo.setImgUrl(newImgUrl);// 修改img_url
                 }
+
+                // 检查是否需要更新数据库
                 synchronized (DoCleanUtil.class){
-                    photoService.updatePhoto(photo);// 修改VISIT_PHOTO表
-                    photoService.updateRptPhoto(photo);// 修改RPT_PHOTO表(一个字段imgUrl)
+                    if(OptionPropUtil.IS_UPDATE_DB()){
+                        photoService.updatePhoto(photo);// 修改VISIT_PHOTO表
+                        photoService.updateRptPhoto(photo);// 修改RPT_PHOTO表(一个字段imgUrl)
+                    }
                 }
             }
             return true;
