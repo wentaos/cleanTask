@@ -296,6 +296,71 @@ public class PhotoDaoImpl implements PhotoDao {
         return imgIdList;
     }
 
+    @Override
+    public int deletePhoto(Photo photo) {
+        Connection conn = DBUtil.getConnection(driver,dbUrl,userName,passWord);
+        PreparedStatement pstmt;
+
+        String table_name = OptionPropUtil.IS_TEST()?"VISIT_PHOTO_T":"VISIT_PHOTO";
+
+        // 设置事务为非自动提交
+        try{
+            // 设置手动处理事务
+            conn.setAutoCommit(false);
+            String sql = "DELETE from "+table_name+" WHERE ID=?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, photo.getId());
+            int record = pstmt.executeUpdate();
+            conn.commit();// 提交Update
+            logger.info("Update Success! 事务提交！");
+            DBUtil.closeDbResources(conn, pstmt, null);
+            return record;
+        }catch (Exception e){
+            logger.error("Dao Update Photo Error!");
+            try{
+                logger.info("Update 回滚！");
+                conn.rollback();
+            }catch (SQLException sqle){
+                sqle.printStackTrace();
+            }
+            e.printStackTrace();
+            return 0;
+        }
+
+    }
+
+    @Override
+    public int deleteRptPhoto(Photo photo) {
+        Connection conn = DBUtil.getConnection(driver,dbUrl,userName,passWord);
+        PreparedStatement pstmt;
+
+        // 设置事务为非自动提交
+        try{
+            // 设置手动处理事务
+            conn.setAutoCommit(false);
+            String sql  ="DELETE FROM RPT_PHOTO WHERE imgId=?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1,photo.getId());
+            int record = pstmt.executeUpdate();
+            conn.commit();// 提交Update
+            logger.info("Update Success! 事务提交！");
+            DBUtil.closeDbResources(conn, pstmt, null);
+            return record;
+        }catch (Exception e){
+            logger.error("Dao Update Photo Error!");
+            try{
+                logger.info("Update 回滚！");
+                conn.rollback();
+            }catch (SQLException sqle){
+                sqle.printStackTrace();
+            }
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+
+
 
 
 

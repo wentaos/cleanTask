@@ -1,6 +1,7 @@
 package com.winchannel.utils.cleanUtil;
 
 import com.winchannel.bean.Photo;
+import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
@@ -118,6 +119,14 @@ public class CleanFileTool {
         return funcCodePath;
     }
 
+    public static String cleanFuncCodePathForOnly(boolean isContainsFunccode,String FUNC_CODE){
+        String PHOTO_PATH = OptionPropUtil.ONLY_DIST_PATH();
+        String funcCodePath = isContainsFunccode?PHOTO_PATH:PHOTO_PATH + "/" + FUNC_CODE;
+        funcCodePath = createPath(funcCodePath);
+        return funcCodePath;
+    }
+
+
     /**
      * 对日期目录进行处理
      * 这里使用 imgUrl：在老数据中 ABSOLUTE_PATH 没有数据
@@ -138,6 +147,20 @@ public class CleanFileTool {
         return date;
     }
 
+    public static String cleanDatePathForOnly(boolean isContainsFunccode,String funcCode, String imgUrl) {
+        String PHOTO_PATH = OptionPropUtil.ONLY_DIST_PATH();
+        String code_date_path = "";
+        String date = "";
+        if(imgUrl!=null && imgUrl.trim().length()>0){
+            date = getDatePathFromUrl(imgUrl);
+            if(date!=null){
+                code_date_path=funcCode+ File.separator+date;
+                code_date_path = createPath(isContainsFunccode?PHOTO_PATH+File.separator+date : PHOTO_PATH+ File.separator +code_date_path);
+            }
+
+        }
+        return date;
+    }
 
     /**
      * 得到 headPath
@@ -177,11 +200,31 @@ public class CleanFileTool {
         return newAbsPath;
     }
 
+
+    public static String getNewAbsPathForOnly(boolean isContainsFuncode,String absolutePath, String funcCodePath,String date) {
+        String headPath = OptionPropUtil.ONLY_DIST_PATH();// getHeadPath(absolutePath);
+//        String datePath = getDatePathFromUrl(absolutePath);
+        String fileNamePath = getFileNamePath(absolutePath);
+        String newAbsPath = headPath + (isContainsFuncode?"":funcCodePath) + "/" + date + "/" + fileNamePath;
+        return newAbsPath;
+    }
+
+
+
     public static String getNewAbsPath(String[] paths) {
         String headPath = OptionPropUtil.PHOTO_PATH();
 //        String datePath = getDatePathFromUrl(paths[0]);
         String fileNamePath = getFileNamePath(paths[0]);
         String newAbsPath = headPath + paths[1] + "/" + paths[2] + "/" + fileNamePath;
+        return newAbsPath;
+    }
+
+
+    public static String getNewAbsPathForOnly(boolean isContainsFuncode,String[] paths) {
+        String headPath = OptionPropUtil.ONLY_DIST_PATH();
+//        String datePath = getDatePathFromUrl(paths[0]);
+        String fileNamePath = getFileNamePath(paths[0]);
+        String newAbsPath = headPath + (isContainsFuncode?"":paths[1] )+ "/" + paths[2] + "/" + fileNamePath;
         return newAbsPath;
     }
 
@@ -217,6 +260,17 @@ public class CleanFileTool {
         return newImgUrl;
     }
 
+    public static String getNewImgUrlForOnly(String oldImgUrl, String funcCodePath,String date) {
+        String ONLY_DIST_PATH = OptionPropUtil.ONLY_DIST_PATH();
+        if (ONLY_DIST_PATH.contains("/")){
+            ONLY_DIST_PATH = "/media/"+ONLY_DIST_PATH.replace(":/","dot1Adot2B").replaceAll("/","dot2B") + oldImgUrl.split("photos")[1];
+        }
+
+        ONLY_DIST_PATH = ONLY_DIST_PATH.replace("dot2Bdot2B","dot2B");
+
+        return ONLY_DIST_PATH;
+
+    }
 
     /**
      * 截取图片日期部分 2016-07-28
@@ -256,15 +310,21 @@ public class CleanFileTool {
     /**
      * 剪切文件
      */
-    public static boolean movePhoto(String sourcePath, String destPath) {
+    public static boolean movePhoto(boolean IS_DELETE_OLD_IMG,boolean IS_DELETE_IMG,String sourcePath, String destPath) {
 
         String sysSourcePath = sourcePath.replace("/", File.separator);// 换成系统的分隔符
         String sysDestPath = destPath.replace("/", File.separator);// 换成系统的分隔符
 
         // 复制0
-        boolean copyOk = copyPhoto(sysSourcePath, sysDestPath);
+        boolean copyOk = false;
+        if (IS_DELETE_IMG){// 如果需要彻底删除，就不用复制了
+            copyOk = true;
+        }else{
+            copyOk = copyPhoto(sysSourcePath, sysDestPath);
+        }
+
         try {
-            if (copyOk) {
+            if (copyOk && (IS_DELETE_OLD_IMG || IS_DELETE_IMG) ) {// 如果是删除源文件
                 // 删除源文件
                 deletePhoto(sysSourcePath);
             }
@@ -289,16 +349,21 @@ public class CleanFileTool {
     /**
      * 剪切文件
      */
-    public static boolean movePhoto(String[] paths) {
+    public static boolean movePhoto(boolean IS_DELETE_OLD_IMG,boolean IS_DELETE_IMG,String[] paths) {
         String PHOTO_PATH = OptionPropUtil.PHOTO_PATH();
-        String sysSourcePath = PHOTO_PATH
-                + paths[0].replace("/", File.separator);// imgUrl 换成系统的分隔符
+        String sysSourcePath = PHOTO_PATH  + paths[0].replace("/", File.separator);// imgUrl 换成系统的分隔符
         String sysDestPath = paths[1].replace("/", File.separator);// 换成系统的分隔符
 
         // 复制0
-        boolean copyOk = copyPhoto(sysSourcePath, sysDestPath);
+        boolean copyOk = false;
+        if (IS_DELETE_IMG){// 如果需要彻底删除，就不用复制了
+            copyOk = true;
+        }else{
+            copyOk = copyPhoto(sysSourcePath, sysDestPath);
+        }
+
         try {
-            if (copyOk) {
+            if (copyOk && (IS_DELETE_OLD_IMG || IS_DELETE_IMG)) {
                 // 删除源文件
                 deletePhoto(sysSourcePath);
             }
@@ -390,6 +455,32 @@ public class CleanFileTool {
         }
         return false;
     }
+
+    /**
+     * 判断两个路径是否等效
+     * 比如  D:/abc/d/     D:/abc/d
+     */
+    public static boolean compPathIsSame(String path1,String path2){
+        File f1 = new File(path1);
+        File f2 = new File(path2);
+        String p1 = f1.getPath();
+        String p2 = f2.getPath();
+        return p1.equals(p2)?true:false;
+    }
+
+
+    @Test
+    public void sdsa(){
+        File f1 = new File("D:/abc/d/");
+        File f2 = new File("D:/abc/d");
+        String p1 = f1.getPath();
+        String p2 = f2.getPath();
+        System.out.print(p1+"-----"+p2);
+    }
+
+
+
+
 
 
 

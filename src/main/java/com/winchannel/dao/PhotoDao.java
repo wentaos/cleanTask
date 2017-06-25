@@ -27,7 +27,9 @@ public interface PhotoDao {
 
     List<String> selectImgIdListByFcQuery(String fcQuerySql);
 
+    int deletePhoto(Photo photo);
 
+    int deleteRptPhoto(Photo photo);
 
 
 

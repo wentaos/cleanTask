@@ -60,8 +60,29 @@ public class PhotoServiceImpl implements PhotoService{
 
     @Override
     public boolean updateRptPhoto(Photo photo) {
-        return photoDao.updateRptPhoto(photo)==1?true:false;
+        return photoDao.updateRptPhoto(photo)>=1?true:false;
     }
+
+    @Override
+    public boolean deletePhoto(Photo photo) {
+        return photoDao.deletePhoto(photo)>=1?true:false;
+    }
+
+    @Override
+    public boolean deleteRptPhoto(Photo photo) {
+        return photoDao.deleteRptPhoto(photo)>=1?true:false;
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     /********************原有功能**************************/
 

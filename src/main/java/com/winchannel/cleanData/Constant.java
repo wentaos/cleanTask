@@ -75,4 +75,25 @@ public class Constant {
 	 */
 	public static final String IS_UPDATE_DB = "IS_UPDATE_DB";
 
+	/**
+	 * 是否需要删除数据库记录
+	 */
+	public static final String IS_DELETE_DB = "IS_DELETE_DB";
+
+	/**
+	 * 是否需要删除磁盘图片文件
+	 */
+	public static final String IS_DELETE_IMG = "IS_DELETE_IMG";
+
+
+
+	/**
+	 * 是否移动到唯一路径
+	 * 唯一的目的存放路径
+	 */
+	public static final String IS_ONLY_PATH = "IS_ONLY_PATH";
+	public static final String ONLY_DIST_PATH = "ONLY_DIST_PATH";
+	public static final String ONLY_FUNC_CODE = "ONLY_FUNC_CODE";
+	public  static final String IS_DELETE_OLD_IMG = "IS_DELETE_OLD_IMG";
+
 }

@@ -3,6 +3,7 @@ package com.winchannel.service;
 
 import com.winchannel.bean.Photo;
 
+import javax.swing.*;
 import java.util.List;
 
 public interface PhotoService {
@@ -20,6 +21,8 @@ public interface PhotoService {
 
     boolean updateRptPhoto(Photo photo);
 
+    boolean deletePhoto(Photo photo);
+    boolean deleteRptPhoto(Photo photo);
 
 
     /****************原功能********************/

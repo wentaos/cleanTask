@@ -205,14 +205,101 @@ public class OptionPropUtil {
         return true;
     }
 
+    /**
+     * IS_DELETE_DB
+     * 是否需要删除数据库记录
+     */
+    public static boolean IS_DELETE_DB(){
+        try{
+            String IS_DELETE_DB = getValue(Constant.IS_DELETE_DB);
+            if(IS_DELETE_DB!=null && IS_DELETE_DB.length()>0){
+                return Boolean.parseBoolean(IS_DELETE_DB);
+            }
 
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return true;
+    }
 
+    /**
+     * IS_DELETE_IMG
+     * 是否需要删除磁盘图片文件
+     */
+    public static boolean IS_DELETE_IMG(){
+        try{
+            String IS_DELETE_IMG = getValue(Constant.IS_DELETE_IMG);
+            if(IS_DELETE_IMG!=null && IS_DELETE_IMG.length()>0){
+                return Boolean.parseBoolean(IS_DELETE_IMG);
+            }
 
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return true;
+    }
 
+    /**
+     * IS_DELETE_OLD_IMG
+     * 是否需要原来的图片文件
+     */
+    public static boolean IS_DELETE_OLD_IMG(){
+        try{
+            String IS_DELETE_OLD_IMG = getValue(Constant.IS_DELETE_OLD_IMG);
+            if(IS_DELETE_OLD_IMG!=null && IS_DELETE_OLD_IMG.length()>0){
+                return Boolean.parseBoolean(IS_DELETE_OLD_IMG);
+            }
 
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return true;
+    }
 
+    /**
+     * IS_ONLY_PATH
+     * 是否移动到唯一路径
+     */
+    public static boolean IS_ONLY_PATH(){
+        try{
+            String IS_ONLY_PATH = getValue(Constant.IS_ONLY_PATH);
+            if(IS_ONLY_PATH!=null && IS_ONLY_PATH.length()>0){
+                return Boolean.parseBoolean(IS_ONLY_PATH);
+            }
 
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return true;
+    }
 
+    /**
+     * ONLY_DIST_PATH
+     * 移动到唯一目录的路径
+     */
+    public static String ONLY_DIST_PATH(){
+        try{
+            String ONLY_DIST_PATH = getValue(Constant.ONLY_DIST_PATH);
+            return ONLY_DIST_PATH;
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * ONLY_FUNC_CODE
+     * 移动到唯一目录的路径时，分配的FUNC_CODE
+     */
+    public static String ONLY_FUNC_CODE(){
+        try{
+            String ONLY_FUNC_CODE = getValue(Constant.ONLY_FUNC_CODE);
+            return ONLY_FUNC_CODE;
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 
 
