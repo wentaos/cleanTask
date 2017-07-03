@@ -36,6 +36,20 @@ public class OptionPropUtil {
         }
     }
 
+    /**
+     * 数据库路径中的分隔符
+     */
+
+    public static String DB_PATH_SEPARATOR(){
+        try{
+            String DB_PATH_SEPARATOR = getValue(Constant.DB_PATH_SEPARATOR);
+            return DB_PATH_SEPARATOR;
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
     /**
      * PHOTO_PATH
