@@ -1,6 +1,8 @@
 package com.winchannel.utils.cleanUtil;
 
+import com.sun.org.apache.bcel.internal.generic.RETURN;
 import com.winchannel.bean.Photo;
+import oracle.jdbc.OracleDriver;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
@@ -40,8 +42,39 @@ public class CleanFileTool {
                 return true;
             }
         }
+
         return false;
     }
+
+
+    /**
+     * 判断是否是移动到固定目录的数据并且已经被移动了
+     */
+    public static boolean isTruePathForOnly(Photo photo) {
+        String DB_PATH_SEPARATOR= OptionPropUtil.DB_PATH_SEPARATOR();
+        // 固定目录路径：包含了FUNC_CODE
+        String ONLY_DIST_PATH = OptionPropUtil.ONLY_DIST_PATH();
+        // 是否包含FUNC_CODE
+        String func_code = photo.getFuncCode();
+        // 2012年的数据没有ABSOLUTE_PATH数据,并且没有dot2B 这种分隔符
+        String imgUrl = photo.getImgUrl();
+        // 为空直接忽略掉
+        if(imgUrl==null || imgUrl.trim().length()==0){
+            return true;
+        }
+        // 如果
+        if(imgUrl.contains("dot2B")){// 新型数据
+            imgUrl = imgUrl.replaceAll("dot2B",DB_PATH_SEPARATOR);
+
+        }
+        imgUrl.replaceAll(DB_PATH_SEPARATOR+DB_PATH_SEPARATOR,DB_PATH_SEPARATOR);
+        if(imgUrl.contains(ONLY_DIST_PATH) && imgUrl.contains(func_code) ){
+            return true;
+        }
+        return false;
+    }
+
+
 
     // 通用版本：对于老数据，没有 ABSOLUTE_PATH 数据
     public static boolean isTruePath2(Photo photo) {
@@ -54,35 +87,36 @@ public class CleanFileTool {
         if(imgUrl==null || imgUrl.trim().length()==0){
             return true;
         }
-
         // 如果
         if(imgUrl.contains("dot2B")){// 新型数据
             return isTurePath("dot2B",imgUrl,func_code);
         }else{
             return isTurePath(DB_PATH_SEP,imgUrl,func_code);
         }
-
     }
 
 
+    /**
+     * 直接根据PHOTO_PATH 目的路路径+FUNC_CODE...判断
+     */
+    public static boolean isTurePath(String PATH_SEP,String imgUrl,String trueFuncCode){
 
-
-
-    public static boolean isTurePath(String DB_PATH_SEP,String imgUrl,String trueFuncCode){
         // 为空直接忽略掉
         if(imgUrl==null || imgUrl.trim().length()==0){
             return true;
         }
 
-        String afterStr = imgUrl.split("photos"+DB_PATH_SEP)[1];
+        String date = getDatePathFromUrl(imgUrl);
 
-        String[] arr = afterStr.split(DB_PATH_SEP);
+        String afterStr = imgUrl.split("photos"+PATH_SEP)[1];
+
+        String[] arr = afterStr.split(PATH_SEP);
 
         int flag_num = arr.length-1;// afterStr中 dot2B 的个数
         if(flag_num>=2){// 可能有错误路径 F0sdsadas_dsdafasddfsad/date/xxx.jpg
-            String date = getDatePathFromUrl(afterStr);
+
             if(date!=null && date.trim().length()>0) {
-                String funccode_id = afterStr.split(DB_PATH_SEP + date)[0];
+                String funccode_id = afterStr.split(PATH_SEP + date)[0];
                 // 日期前面的目录 不是错误的目录，和正确的FUNC_CODE一样
                 if (funccode_id.toLowerCase().trim().startsWith((trueFuncCode.toLowerCase().trim()))
                         && funccode_id.trim().length()<32){// 太长就是错误的路径
@@ -96,8 +130,8 @@ public class CleanFileTool {
         }else if(flag_num==1){// afterStr 说明剩下的格式是: date/xxx.jpg
 
             // 先得到日期：如果防寒日期，则不是正确的路径格式
-            String date = getDatePathFromUrl(afterStr);
-            if(date!=null){
+            String date1 = getDatePathFromUrl(afterStr);
+            if(date1!=null){
                 return false;
             }
 
@@ -108,6 +142,21 @@ public class CleanFileTool {
     }
 
 
+    /**
+     * 根据imgUrl得到该照片数据的主目录(FUNC_CODE上一层)
+     * 只能实现含有photos的目录
+     * 其他的无法自动判断是不是上一级目录
+     * 该方法应该在判断imgUrl中是否含有FUNC_CODE之后再调用判断：如果已经含有了FUNC_CODE就没必要再获取了，获取的目的这里就死为了创建FUNC_CODE目录
+     */
+    public static String getPhotoSrcPath(String imgUrl){
+        String rootImgPath = null;
+        String date = getDatePathFromUrl(imgUrl);
+        imgUrl = imgUrl.replaceAll("dot2B",DB_PATH_SEP);
+        if(imgUrl.contains("photos")){
+            rootImgPath = imgUrl.split("photos")[0]+"photos";
+        }
+        return rootImgPath;
+    }
 
 
 
@@ -123,8 +172,8 @@ public class CleanFileTool {
     }
 
     public static String cleanFuncCodePathForOnly(boolean isContainsFunccode,String FUNC_CODE){
-        String PHOTO_PATH = OptionPropUtil.ONLY_DIST_PATH();
-        String funcCodePath = isContainsFunccode?PHOTO_PATH:PHOTO_PATH + DB_PATH_SEP + FUNC_CODE;
+        String ONLY_DIST_PATH = OptionPropUtil.ONLY_DIST_PATH();
+        String funcCodePath = isContainsFunccode?ONLY_DIST_PATH:ONLY_DIST_PATH + DB_PATH_SEP + FUNC_CODE;
         funcCodePath = createPath(funcCodePath);
         return funcCodePath;
     }
@@ -150,19 +199,16 @@ public class CleanFileTool {
         return date;
     }
 
-    public static String cleanDatePathForOnly(boolean isContainsFunccode,String funcCode, String imgUrl) {
-        String PHOTO_PATH = OptionPropUtil.ONLY_DIST_PATH();
+    public static String cleanDatePathForOnly(String funcCodeFullPath, String imgUrl) {
         String code_date_path = "";
         String date = "";
         if(imgUrl!=null && imgUrl.trim().length()>0){
             date = getDatePathFromUrl(imgUrl);
             if(date!=null){
-                code_date_path=funcCode+ File.separator+date;
-                code_date_path = createPath(isContainsFunccode?PHOTO_PATH+File.separator+date : PHOTO_PATH+ File.separator +code_date_path);
+                code_date_path = createPath(funcCodeFullPath+File.separator+date);
             }
-
         }
-        return date;
+        return code_date_path;
     }
 
     /**
@@ -204,11 +250,9 @@ public class CleanFileTool {
     }
 
 
-    public static String getNewAbsPathForOnly(boolean isContainsFuncode,String absolutePath, String funcCodePath,String date) {
-        String headPath = OptionPropUtil.ONLY_DIST_PATH();// getHeadPath(absolutePath);
-//        String datePath = getDatePathFromUrl(absolutePath);
+    public static String getNewAbsPathForOnly(String absolutePath, String funccodeDatePath) {
         String fileNamePath = getFileNamePath(absolutePath);
-        String newAbsPath = headPath + (isContainsFuncode?"":funcCodePath) + DB_PATH_SEP + date + DB_PATH_SEP + fileNamePath;
+        String newAbsPath = funccodeDatePath + DB_PATH_SEP + fileNamePath;
         return newAbsPath;
     }
 
@@ -223,11 +267,9 @@ public class CleanFileTool {
     }
 
 
-    public static String getNewAbsPathForOnly(boolean isContainsFuncode,String[] paths) {
-        String headPath = OptionPropUtil.ONLY_DIST_PATH();
-//        String datePath = getDatePathFromUrl(paths[0]);
+    public static String getNewAbsPathForOnly(String[] paths) {
         String fileNamePath = getFileNamePath(paths[0]);
-        String newAbsPath = headPath + (isContainsFuncode?"":paths[1] )+ DB_PATH_SEP + paths[2] + DB_PATH_SEP + fileNamePath;
+        String newAbsPath = paths[1] + DB_PATH_SEP + fileNamePath;
         return newAbsPath;
     }
 
@@ -354,7 +396,42 @@ public class CleanFileTool {
 
     /**
      * 剪切文件
+     * TODO ???
      */
+    public static boolean movePhotoForOnly(boolean IS_DELETE_OLD_IMG,boolean IS_DELETE_IMG,String[] paths) {
+        String ONLY_DIST_PATH = OptionPropUtil.ONLY_DIST_PATH();
+        String sysSourcePath = paths[0].replace(DB_PATH_SEP, File.separator);// imgUrl 换成系统的分隔符
+        String sysDestPath = paths[1].replace(DB_PATH_SEP, File.separator);// 换成系统的分隔符
+
+        // 复制0
+        boolean copyOk = false;
+        if (IS_DELETE_IMG){// 如果需要彻底删除，就不用复制了
+            copyOk = true;
+        }else{
+            copyOk = copyPhoto(sysSourcePath, sysDestPath);
+        }
+
+        try {
+            if (copyOk && (IS_DELETE_OLD_IMG || IS_DELETE_IMG)) {
+                // 删除源文件
+                deletePhoto(sysSourcePath);
+            }
+            // eg: D:/aaa/2017-02-23
+            String dateFullPath = sysSourcePath.substring(0, sysSourcePath.lastIndexOf(File.separator));
+            // 检查对应的原日期目录中是否还有图片，没有图片，删除整个日期目录
+            if (isEmptyPath(dateFullPath)) {
+                // 删除日期目录
+                new File(dateFullPath).delete();
+                return true;
+            } else {
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public static boolean movePhoto(boolean IS_DELETE_OLD_IMG,boolean IS_DELETE_IMG,String[] paths) {
         String PHOTO_PATH = OptionPropUtil.PHOTO_PATH();
         String sysSourcePath = PHOTO_PATH  + paths[0].replace(DB_PATH_SEP, File.separator);// imgUrl 换成系统的分隔符
@@ -388,7 +465,6 @@ public class CleanFileTool {
             return false;
         }
     }
-
 
 
     /**

@@ -28,6 +28,7 @@ public class DoCleanUtil {
         System.out.println("处理ID ========>>> "+curr_id);
 
 
+        // 获取的目的路径：后面可作为判断是否正确路径使用
         String PHOTO_PATH = OptionPropUtil.PHOTO_PATH();
         boolean IS_DELETE_DB = OptionPropUtil.IS_DELETE_DB();// 是否删除数据库记录数据
         boolean IS_DELETE_IMG = OptionPropUtil.IS_DELETE_IMG();// 是否删除磁盘图片文件
@@ -91,11 +92,10 @@ public class DoCleanUtil {
 
             // 判断该Photo是否已经是一个符合规则的路径
             photo.setFuncCode(FUNC_CODE);
-            if (CleanFileTool.isTruePath2(photo)) {
+            if (CleanFileTool.isTruePathForOnly(photo)) {
                 // 如果是符合规则的路径，就继续下一个Photo
                 return true;
             }
-
 
             // 是否包含FUNC_CODE
             boolean isContainsFunccode = ONLY_DIST_PATH.contains(FUNC_CODE);
@@ -105,7 +105,7 @@ public class DoCleanUtil {
             String funcCodeFullPath = CleanFileTool.cleanFuncCodePathForOnly(isContainsFunccode,FUNC_CODE);
 
             // 处理日期目录  得到 D:/Photo_Test/photos/FUNC_CODE/2017-01-23 这层目录
-            String date = CleanFileTool.cleanDatePathForOnly(isContainsFunccode, FUNC_CODE, photo.getImgUrl());
+            String funccodeDatePath = CleanFileTool.cleanDatePathForOnly(funcCodeFullPath, photo.getImgUrl());
 
             // 开始move文件
             // 在原绝对路径基础上加上FUNC_CODE目录
@@ -115,16 +115,16 @@ public class DoCleanUtil {
             boolean moveFileOk = false;
 
             if (containsDot2B) {// 有绝对路径数据
-                newAbsPath = CleanFileTool.getNewAbsPathForOnly(isContainsFunccode,absolutePath, FUNC_CODE, date);
+                newAbsPath = CleanFileTool.getNewAbsPathForOnly(absolutePath, funccodeDatePath);
                 moveFileOk = CleanFileTool.movePhoto(IS_DELETE_OLD_IMG,IS_DELETE_IMG,absolutePath, newAbsPath);
             } else {
-                newAbsPath = CleanFileTool.getNewAbsPathForOnly(isContainsFunccode,new String[]{imgUrl, FUNC_CODE,date});
-                moveFileOk = CleanFileTool.movePhoto(IS_DELETE_OLD_IMG,IS_DELETE_IMG,new String[]{imgUrl, newAbsPath});
+                newAbsPath = CleanFileTool.getNewAbsPathForOnly(new String[]{imgUrl,funccodeDatePath});
+                moveFileOk = CleanFileTool.movePhotoForOnly(IS_DELETE_OLD_IMG,IS_DELETE_IMG,new String[]{imgUrl, newAbsPath});
             }
 
             if (moveFileOk) {
                 // 更新数据库:需要更新photo的 absolute_path 和 img_url
-                String newImgUrl = CleanFileTool.getNewImgUrlForOnly(photo.getImgUrl(), FUNC_CODE,date);
+                String newImgUrl = CleanFileTool.getNewImgUrlForOnly(photo.getImgUrl(), FUNC_CODE,funccodeDatePath);
 
                 photo.setImgAbsPath(newAbsPath);// 修改绝对路径
                 if(newImgUrl!=null){
