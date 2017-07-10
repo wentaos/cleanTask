@@ -36,6 +36,12 @@ public class DoCleanUtil {
         boolean IS_ONLY_PATH = OptionPropUtil.IS_ONLY_PATH();// 是否移动到独立路径
         boolean IS_UPDATE_DB = OptionPropUtil.IS_UPDATE_DB();// 是否更新数据库记录
 
+        boolean IS_BAK_IMG = false;
+        if(IS_DELETE_IMG){// 删除磁盘图片时才备份
+            // 这时候获取到的可能是true，需要备份
+            IS_BAK_IMG = OptionPropUtil.IS_BAK_IMG();
+        }
+
         String ONLY_DIST_PATH=null;
         String ONLY_FUNC_CODE=null;
         if(IS_ONLY_PATH){
@@ -114,6 +120,15 @@ public class DoCleanUtil {
             // 注意：方法内需要对路径中的分隔符处理
             boolean moveFileOk = false;
 
+            // 如果需要备份，在移除之前备份
+            if (IS_BAK_IMG){
+                String bakPath = PHOTO_PATH + File.separator + "photo_bak";
+                String fileName = CleanFileTool.getFileNamePath(absolutePath);
+                String fcunccodeDate = funccodeDatePath.replace(PHOTO_PATH,"");
+                String bakDestPath = bakPath + File.separator +  fcunccodeDate + File.separator + fileName;
+                CleanFileTool.copyPhoto(absolutePath,bakDestPath);
+            }
+
             if (containsDot2B) {// 有绝对路径数据
                 newAbsPath = CleanFileTool.getNewAbsPathForOnly(absolutePath, funccodeDatePath);
                 moveFileOk = CleanFileTool.movePhoto(IS_DELETE_OLD_IMG,IS_DELETE_IMG,absolutePath, newAbsPath);
@@ -124,7 +139,7 @@ public class DoCleanUtil {
 
             if (moveFileOk) {
                 // 更新数据库:需要更新photo的 absolute_path 和 img_url
-                String newImgUrl = CleanFileTool.getNewImgUrlForOnly(photo.getImgUrl(), FUNC_CODE,funccodeDatePath);
+                String newImgUrl = CleanFileTool.getNewImgUrlForOnly(photo.getImgUrl(),funccodeDatePath);
 
                 photo.setImgAbsPath(newAbsPath);// 修改绝对路径
                 if(newImgUrl!=null){
@@ -168,6 +183,15 @@ public class DoCleanUtil {
             // 处理日期目录  得到 D:/Photo_Test/photos/FUNC_CODE/2017-01-23 这层目录
             String date = CleanFileTool.cleanDatePath(FUNC_CODE, photo.getImgUrl());
 
+            // 如果需要备份，在移除之前备份
+            if (IS_BAK_IMG){
+                String bakPath = PHOTO_PATH + File.separator + "photo_bak" + File.separator + FUNC_CODE + File.separator + date ;
+                String fileName = CleanFileTool.getFileNamePath(absolutePath);
+                String bakDestPath = bakPath + File.separator + fileName;
+                CleanFileTool.copyPhoto(absolutePath,bakDestPath);
+            }
+
+
             // 开始move文件
             // 在原绝对路径基础上加上FUNC_CODE目录
             String newAbsPath = "";
@@ -176,10 +200,10 @@ public class DoCleanUtil {
             boolean moveFileOk = false;
 
             if (containsDot2B) {// 有绝对路径数据
-                newAbsPath = CleanFileTool.getNewAbsPath(absolutePath, FUNC_CODE,date);
+                newAbsPath = CleanFileTool.getNewAbsPath(absolutePath, funcCodeFullPath,date);
                 moveFileOk = CleanFileTool.movePhoto(IS_DELETE_OLD_IMG,IS_DELETE_IMG,absolutePath, newAbsPath);
             } else {
-                newAbsPath = CleanFileTool.getNewAbsPath(new String[]{imgUrl, FUNC_CODE,date});
+                newAbsPath = CleanFileTool.getNewAbsPath(new String[]{imgUrl, funcCodeFullPath,date});
                 moveFileOk = CleanFileTool.movePhoto(IS_DELETE_OLD_IMG,IS_DELETE_IMG,new String[]{imgUrl, newAbsPath});
             }
 
@@ -211,10 +235,6 @@ public class DoCleanUtil {
             }
             return true;
         }
-
-
-
-
 
         return false;
 

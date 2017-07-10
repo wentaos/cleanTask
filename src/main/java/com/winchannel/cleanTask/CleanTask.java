@@ -3,6 +3,7 @@ package com.winchannel.cleanTask;
 import com.winchannel.cleanData.DistId;
 import com.winchannel.cleanData.Memory;
 import com.winchannel.cleanThread.CleanThread;
+import com.winchannel.utils.cleanUtil.CleanFileTool;
 import com.winchannel.utils.cleanUtil.IDPoolPropUtil;
 import com.winchannel.utils.cleanUtil.IDPoolUtil;
 import com.winchannel.utils.cleanUtil.OptionPropUtil;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +45,19 @@ public class CleanTask {
 
     @Scheduled(cron = "${RUN_CRON}")
     public void cleanTask(){
+
+        // 删除图片数据的话是否备份
+        boolean IS_DELETE_IMG = OptionPropUtil.IS_DELETE_IMG();
+        if(IS_DELETE_IMG){// 如果删除数据的话才需要备份
+            boolean IS_BAK_IMG = OptionPropUtil.IS_BAK_IMG();
+            if(IS_BAK_IMG){
+                //  创建备份目录
+                String PHOTO_PATH = OptionPropUtil.PHOTO_PATH();
+                CleanFileTool.createPath(PHOTO_PATH + File.separator + "photo_bak");
+            }
+        }
+
+
         // 设置新的历史线程数
         IDPoolPropUtil.setHIS_THREAD_NUM(THREAD_NUM);
         // 需要探测是否配置了 ID_INFO_PATH
@@ -95,6 +110,7 @@ public class CleanTask {
                 cleanThread.setID_POOL(ID_POOL);
                 cleanThread.start();
             }
+
             // 多出的线程开始新数据分配
             for (int i=HIS_THREAD_NUM+1;i<=THREAD_NUM;i++){
                 String threadName = "Thread_"+i;

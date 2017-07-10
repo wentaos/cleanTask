@@ -86,6 +86,11 @@ public class Constant {
 	public static final String IS_DELETE_IMG = "IS_DELETE_IMG";
 
 	/**
+	 * 是否备份需要删除的图片数据
+	 */
+	public static final String IS_BAK_IMG = "IS_BAK_IMG";
+
+	/**
 	 * 数据库中的分隔符
 	 */
 	public static final String DB_PATH_SEPARATOR = "DB_PATH_SEPARATOR";

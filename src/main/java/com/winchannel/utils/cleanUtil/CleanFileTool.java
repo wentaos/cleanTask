@@ -199,6 +199,7 @@ public class CleanFileTool {
         return date;
     }
 
+
     public static String cleanDatePathForOnly(String funcCodeFullPath, String imgUrl) {
         String code_date_path = "";
         String date = "";
@@ -226,13 +227,19 @@ public class CleanFileTool {
     }
 
     /**
-     * 获取文件名部分apth
+     * 获取文件名部分 path
      */
     public static String getFileNamePath(String url) {
         if (url == null) {
             return null;
         }
-        String fileNamePath = url.substring(url.lastIndexOf(DB_PATH_SEP) + 1);
+        String fileNamePath = null;
+        if(url.contains("dot2B")){
+            fileNamePath = url.substring(url.lastIndexOf("dot2B") + 1);
+        }else {
+            fileNamePath = url.substring(url.lastIndexOf(DB_PATH_SEP) + 1);
+        }
+
         return fileNamePath;
     }
 
@@ -241,11 +248,9 @@ public class CleanFileTool {
      * 组装新的file 绝对路径
      * 加上 FUNC_CODE_PATH
      */
-    public static String getNewAbsPath(String absolutePath, String funcCodePath,String date) {
-        String headPath = OptionPropUtil.PHOTO_PATH();// getHeadPath(absolutePath);
-//        String datePath = getDatePathFromUrl(absolutePath);
+    public static String getNewAbsPath(String absolutePath, String funcCodeFullPath,String date) {
         String fileNamePath = getFileNamePath(absolutePath);
-        String newAbsPath = headPath + funcCodePath + DB_PATH_SEP + date + DB_PATH_SEP + fileNamePath;
+        String newAbsPath = funcCodeFullPath + DB_PATH_SEP + date + DB_PATH_SEP + fileNamePath;
         return newAbsPath;
     }
 
@@ -259,10 +264,8 @@ public class CleanFileTool {
 
 
     public static String getNewAbsPath(String[] paths) {
-        String headPath = OptionPropUtil.PHOTO_PATH();
-//        String datePath = getDatePathFromUrl(paths[0]);
         String fileNamePath = getFileNamePath(paths[0]);
-        String newAbsPath = headPath + paths[1] + DB_PATH_SEP + paths[2] + DB_PATH_SEP + fileNamePath;
+        String newAbsPath = paths[1] + DB_PATH_SEP + paths[2] + DB_PATH_SEP + fileNamePath;
         return newAbsPath;
     }
 
@@ -273,49 +276,46 @@ public class CleanFileTool {
         return newAbsPath;
     }
 
+
+
     /**
-     * 得到新的 IMG_URL
-     * IMG_URL: /media/Ddot1Adot2BAPPdot2BSFA_demodot2Bwebappsdot2BROOTdot2B photosdot2B  这里可能有错误目录dot2B  2016-07-28dot2Bb5f6ebf8-eb7f-44ef-bd5d-8843bcd74706dot4Djpg.jpg
-     * 老数据是 photos/2017-01-01/xxx.jpg
+     * 专门为某个FUNC_CODE：在Only目的路径中已经有了FUNC_CODE
      */
-    public static String getNewImgUrl(String oldImgUrl, String funcCodePath,String date) {
+    public static String getNewImgUrlForOnly(String oldImgUrl,String funccodeDatePath) {
+        String ONLY_DIST_PATH = OptionPropUtil.ONLY_DIST_PATH();
         String newImgUrl = null;
-        if (oldImgUrl != null) {
-//        	String date = getDatePathFromUrl(oldImgUrl);
-            newImgUrl = oldImgUrl;// 保证原来的数据没问题
-
-            if (date!=null) {
-                // 替换
-                String flag = "dot2B";
-                if(oldImgUrl.contains("dot2B")){
-                    flag = "dot2B";
-                }else{// 就是 / 分割
-                    flag = DB_PATH_SEP;
-                }
-                String var0 = oldImgUrl.split("photos"+flag)[1];
-                if(var0!=null && var0.trim().length()>0){
-                    String var1 = var0.split(date)[0];// 得到的可能是错误目录
-                    if(var1!=null && var1.trim().length()>0){// 说明存在错误目录
-                        newImgUrl = oldImgUrl.replace(var1+date, funcCodePath + flag + date);// 整体替换
-                    }
-                }
-
-            }
+        if (ONLY_DIST_PATH.contains(DB_PATH_SEP)){
+            newImgUrl = DB_PATH_SEP+"media"+DB_PATH_SEP + funccodeDatePath.replaceAll("/","dot2B") + "dot2B"+getFileNamePath(oldImgUrl) ;
         }
+
+        newImgUrl = newImgUrl.replace("dot2Bdot2B","dot2B");
+
         return newImgUrl;
     }
 
-    public static String getNewImgUrlForOnly(String oldImgUrl, String funcCodePath,String date) {
-        String ONLY_DIST_PATH = OptionPropUtil.ONLY_DIST_PATH();
-        if (ONLY_DIST_PATH.contains(DB_PATH_SEP)){
-            ONLY_DIST_PATH = DB_PATH_SEP+"media"+DB_PATH_SEP+ONLY_DIST_PATH.replace(":"+DB_PATH_SEP,"dot1Adot2B").replaceAll(DB_PATH_SEP,"dot2B") + oldImgUrl.split("photos")[1];
-        }
 
-        ONLY_DIST_PATH = ONLY_DIST_PATH.replace("dot2Bdot2B","dot2B");
+    /**
+     * 普通情况
+     */
+    public static String getNewImgUrl(String oldImgUrl,String FUNC_CODE,String date){
+        String DB_PATH_SEPARATOR = OptionPropUtil.DB_PATH_SEPARATOR();
+        String newImgUrl = null;
+        //linux中的imgUrl路径,只有/ 没有:/
+        //  /media/dot2B opt dot2B app datedot2B photos dot2B F20S01_01_V20S01 dot2B 2016-11-08 dot2B d3e2b736-8d1c-49d1-87a6-ce45fc603e30dot4Djpg.jpg
+        String urlHead = "/media/";
+        String PHOTO_PATH = OptionPropUtil.PHOTO_PATH().replaceAll(DB_PATH_SEPARATOR,"dot2B");
+        newImgUrl = urlHead + PHOTO_PATH + "dot2B"+FUNC_CODE+"dot2B"+date+"dot2B"+getFileNamePath(oldImgUrl);
 
-        return ONLY_DIST_PATH;
-
+        return newImgUrl;
     }
+
+
+
+
+
+
+
+
 
     /**
      * 截取图片日期部分 2016-07-28
@@ -351,6 +351,7 @@ public class CleanFileTool {
         }
         return path;
     }
+
 
 
 
@@ -399,7 +400,6 @@ public class CleanFileTool {
      * TODO ???
      */
     public static boolean movePhotoForOnly(boolean IS_DELETE_OLD_IMG,boolean IS_DELETE_IMG,String[] paths) {
-        String ONLY_DIST_PATH = OptionPropUtil.ONLY_DIST_PATH();
         String sysSourcePath = paths[0].replace(DB_PATH_SEP, File.separator);// imgUrl 换成系统的分隔符
         String sysDestPath = paths[1].replace(DB_PATH_SEP, File.separator);// 换成系统的分隔符
 
@@ -434,7 +434,7 @@ public class CleanFileTool {
 
     public static boolean movePhoto(boolean IS_DELETE_OLD_IMG,boolean IS_DELETE_IMG,String[] paths) {
         String PHOTO_PATH = OptionPropUtil.PHOTO_PATH();
-        String sysSourcePath = PHOTO_PATH  + paths[0].replace(DB_PATH_SEP, File.separator);// imgUrl 换成系统的分隔符
+        String sysSourcePath = paths[0].replace(DB_PATH_SEP, File.separator);// imgUrl 换成系统的分隔符
         String sysDestPath = paths[1].replace(DB_PATH_SEP, File.separator);// 换成系统的分隔符
 
         // 复制0

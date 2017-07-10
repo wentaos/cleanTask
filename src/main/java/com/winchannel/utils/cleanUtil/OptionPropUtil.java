@@ -253,6 +253,24 @@ public class OptionPropUtil {
         return true;
     }
 
+
+    /**
+     * IS_BAK_IMG
+     * 是否需要备份需要删除图片
+     */
+    public static boolean IS_BAK_IMG(){
+        try{
+            String IS_BAK_IMG = getValue(Constant.IS_BAK_IMG);
+            if(IS_BAK_IMG!=null && IS_BAK_IMG.length()>0){
+                return Boolean.parseBoolean(IS_BAK_IMG);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return true;
+    }
+
     /**
      * IS_DELETE_OLD_IMG
      * 是否需要原来的图片文件
