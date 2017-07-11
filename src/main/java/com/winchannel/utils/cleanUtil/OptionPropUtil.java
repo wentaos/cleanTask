@@ -3,6 +3,7 @@ package com.winchannel.utils.cleanUtil;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import com.winchannel.cleanData.Constant;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -270,6 +271,25 @@ public class OptionPropUtil {
         }
         return true;
     }
+
+    /**
+     * BAK_IMG_PATH
+     * 备份图片的目录
+     */
+    public static String BAK_IMG_PATH(){
+        try{
+            String BAK_IMG_PATH = getValue(Constant.BAK_IMG_PATH);
+            if(BAK_IMG_PATH!=null && BAK_IMG_PATH.length()>0){
+                return BAK_IMG_PATH;
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        // 如果没有配置就默认使用目的路径+"photo_bak"
+        return PHOTO_PATH()+ File.separator+"photo_bak";
+    }
+
 
     /**
      * IS_DELETE_OLD_IMG

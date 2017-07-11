@@ -36,11 +36,8 @@ public class DoCleanUtil {
         boolean IS_ONLY_PATH = OptionPropUtil.IS_ONLY_PATH();// 是否移动到独立路径
         boolean IS_UPDATE_DB = OptionPropUtil.IS_UPDATE_DB();// 是否更新数据库记录
 
-        boolean IS_BAK_IMG = false;
-        if(IS_DELETE_IMG){// 删除磁盘图片时才备份
-            // 这时候获取到的可能是true，需要备份
-            IS_BAK_IMG = OptionPropUtil.IS_BAK_IMG();
-        }
+        boolean  IS_BAK_IMG = OptionPropUtil.IS_BAK_IMG();
+        String BAK_IMG_PATH = OptionPropUtil.BAK_IMG_PATH();
 
         String ONLY_DIST_PATH=null;
         String ONLY_FUNC_CODE=null;
@@ -122,10 +119,9 @@ public class DoCleanUtil {
 
             // 如果需要备份，在移除之前备份
             if (IS_BAK_IMG){
-                String bakPath = PHOTO_PATH + File.separator + "photo_bak";
                 String fileName = CleanFileTool.getFileNamePath(absolutePath);
                 String fcunccodeDate = funccodeDatePath.replace(PHOTO_PATH,"");
-                String bakDestPath = bakPath + File.separator +  fcunccodeDate + File.separator + fileName;
+                String bakDestPath = BAK_IMG_PATH + File.separator +  fcunccodeDate + File.separator + fileName;
                 CleanFileTool.copyPhoto(absolutePath,bakDestPath);
             }
 
@@ -185,7 +181,7 @@ public class DoCleanUtil {
 
             // 如果需要备份，在移除之前备份
             if (IS_BAK_IMG){
-                String bakPath = PHOTO_PATH + File.separator + "photo_bak" + File.separator + FUNC_CODE + File.separator + date ;
+                String bakPath = BAK_IMG_PATH + File.separator + FUNC_CODE + File.separator + date ;
                 String fileName = CleanFileTool.getFileNamePath(absolutePath);
                 String bakDestPath = bakPath + File.separator + fileName;
                 CleanFileTool.copyPhoto(absolutePath,bakDestPath);

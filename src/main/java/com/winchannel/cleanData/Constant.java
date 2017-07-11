@@ -89,6 +89,10 @@ public class Constant {
 	 * 是否备份需要删除的图片数据
 	 */
 	public static final String IS_BAK_IMG = "IS_BAK_IMG";
+	/**
+	 * 如果备份的话，用户配置的备份目录
+	 */
+	public static final String BAK_IMG_PATH = "BAK_IMG_PATH";
 
 	/**
 	 * 数据库中的分隔符

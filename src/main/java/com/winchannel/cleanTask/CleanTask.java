@@ -46,15 +46,12 @@ public class CleanTask {
     @Scheduled(cron = "${RUN_CRON}")
     public void cleanTask(){
 
-        // 删除图片数据的话是否备份
-        boolean IS_DELETE_IMG = OptionPropUtil.IS_DELETE_IMG();
-        if(IS_DELETE_IMG){// 如果删除数据的话才需要备份
-            boolean IS_BAK_IMG = OptionPropUtil.IS_BAK_IMG();
-            if(IS_BAK_IMG){
-                //  创建备份目录
-                String PHOTO_PATH = OptionPropUtil.PHOTO_PATH();
-                CleanFileTool.createPath(PHOTO_PATH + File.separator + "photo_bak");
-            }
+        // 是否需要备份图片
+        boolean IS_BAK_IMG = OptionPropUtil.IS_BAK_IMG();
+        if(IS_BAK_IMG){
+            // 创建备份目录
+            String BAK_IMG_PATH = OptionPropUtil.BAK_IMG_PATH();
+            CleanFileTool.createPath(BAK_IMG_PATH);
         }
 
 
