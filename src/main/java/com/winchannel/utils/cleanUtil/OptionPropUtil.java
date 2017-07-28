@@ -2,6 +2,7 @@ package com.winchannel.utils.cleanUtil;
 
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import com.winchannel.cleanData.Constant;
+import com.winchannel.utils.sysUtils.LogUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -11,11 +12,11 @@ import java.util.Properties;
 
 
 public class OptionPropUtil {
-
+    private static LogUtil logger = new LogUtil().log(OptionPropUtil.class);
     /**
      * 资源文件
      */
-    private static String resourceFilePath = "spring/config/option.properties";
+    private static String resourceFilePath = "spring"+File.separator+"config"+File.separator+"option.properties";
     private static Properties prop = new Properties();
 
 

@@ -13,7 +13,7 @@ log4j.appender.info.datePattern='.'yyyy-MM-dd
 log4j.appender.info.Threshold = info   
 log4j.appender.info.append=true   
 #log4j.appender.info.File=/home/admin/rus-api-services/logs/info/GaoKuai2YongHu_Info
-log4j.appender.info.File=/usr/photo_logs/info.log
+log4j.appender.info.File=D:\\Photo_Test\\logs\\info\\logs
 
 log4j.logger.error=error  
 log4j.appender.error=org.apache.log4j.DailyRollingFileAppender
@@ -23,7 +23,7 @@ log4j.appender.error.datePattern='.'yyyy-MM-dd
 log4j.appender.error.Threshold = error   
 log4j.appender.error.append=true   
 #log4j.appender.error.File=/home/admin/rus-api-services/logs/error/GaoKuai2YongHu_Error
-log4j.appender.error.File=/usr/photo_logs/error.log
+log4j.appender.error.File=D:\\Photo_Test\\logs\\error\\logs
 
 log4j.logger.DEBUG=DEBUG
 log4j.appender.DEBUG=org.apache.log4j.DailyRollingFileAppender
@@ -33,7 +33,7 @@ log4j.appender.DEBUG.datePattern='.'yyyy-MM-dd
 log4j.appender.DEBUG.Threshold = DEBUG   
 log4j.appender.DEBUG.append=true   
 #log4j.appender.DEBUG.File=/home/admin/rus-api-services/logs/debug/GaoKuai2YongHu_DeBug
-log4j.appender.DEBUG.File=/usr/photo_logs/debug.log
+log4j.appender.DEBUG.File=D:\\Photo_Test\\logs\\debug\\logs
 
 ###
 log4j.logger.com.ibatis=DEBUG

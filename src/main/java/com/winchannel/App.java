@@ -21,8 +21,7 @@ import java.util.concurrent.TimeUnit;
 @EnableScheduling
 @Configuration
 //@SpringBootApplication(exclude={DataSourceAutoConfiguration.class,HibernateJpaAutoConfiguration.class,DataSourceTransactionManagerAutoConfiguration.class})
-
-public class App {
+class App {
     @Value("${server.port}")
     private int port;
     @Value("${server.sessionTimeout}")

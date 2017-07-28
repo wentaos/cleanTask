@@ -47,7 +47,7 @@ public class PhotoDaoImpl implements PhotoDao {
 
         logger.info("原 baseQuerySql:"+baseQuerySql);
 
-        // 获取到第一个where
+        // 获取到第一个from
         Pattern p = Pattern.compile("[Ff][Rr][Oo][Mm]");
         Matcher m = p.matcher(baseQuerySql);
         if (m.find()){
@@ -56,7 +56,7 @@ public class PhotoDaoImpl implements PhotoDao {
             String sqlTail = baseQuerySql.substring(start);
             baseQuerySql = "SELECT MAX(ID) maxId  "+sqlTail;
         }else {
-            throw new RuntimeException("SQL 语法有毛病啊！");
+            throw new RuntimeException("SQL 语法有毛病啊！缺少FROM");
         }
 
         logger.info("处理后 baseQuerySql:"+baseQuerySql);
@@ -91,8 +91,10 @@ public class PhotoDaoImpl implements PhotoDao {
             baseQuerySql = "SELECT TOP "+ REDUCE_ID_NUM +" p.ID FROM "
                     +"("+baseQuerySql+") p WHERE p.ID> "+endId+" ORDER BY ID";
         }else if ("ORACLE".equals(DB_TYPE)){
-            baseQuerySql = "SELECT row_number() over(order by p.ID) AS rn,p.ID FROM "
-                    +"("+baseQuerySql+") p WHERE p.ID>"+endId+" rownum<="+REDUCE_ID_NUM;
+
+            baseQuerySql = "SELECT * FROM ( SELECT row_number() over(order by p.ID) AS rn,p.ID FROM "
+                    +"("+baseQuerySql+") p WHERE p.ID>"+endId+" ) WHERE rownum<="+REDUCE_ID_NUM;
+
         }else if ("MYSQL".equals(DB_TYPE)){
             baseQuerySql = "SELECT p.ID FROM "
                     +"("+baseQuerySql+") p WHERE p.ID>"+endId+" ORDER BY p.ID LIMIT "+ REDUCE_ID_NUM;

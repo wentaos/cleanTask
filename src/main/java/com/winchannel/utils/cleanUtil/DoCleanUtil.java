@@ -23,9 +23,9 @@ public class DoCleanUtil {
      */
     public boolean cleanPathHandler(long curr_id) {
 
-        System.out.println("处理ID ========>>> "+curr_id);
-        System.out.println("处理ID ========>>> "+curr_id);
-        System.out.println("处理ID ========>>> "+curr_id);
+        System.out.println("reduce ID ========>>> "+curr_id);
+        System.out.println("reduce ID ========>>> "+curr_id);
+        System.out.println("reduce ID ========>>> "+curr_id);
 
 
         // 获取的目的路径：后面可作为判断是否正确路径使用
@@ -55,6 +55,10 @@ public class DoCleanUtil {
             photo.setBizDate(date);
         }
 
+        logger.info("photo.getImgUrl() ====》 "+photo.getImgUrl());
+        logger.info("photo.getImgUrl() ====》 "+photo.getImgUrl());
+        logger.info("photo.getImgUrl() ====》 "+photo.getImgUrl());
+
         if (photo == null) {
             return true;// 直接忽略
         }
@@ -62,6 +66,9 @@ public class DoCleanUtil {
         String absolutePath = photo.getImgAbsPath();
 
         String imgUrl = photo.getImgUrl();
+
+
+
         boolean containsDot2B = false;
         // 判断是否包含 dot2B
         if (imgUrl != null && imgUrl.contains("dot2B")) {// 说明是新数据
@@ -110,6 +117,11 @@ public class DoCleanUtil {
             // 处理日期目录  得到 D:/Photo_Test/photos/FUNC_CODE/2017-01-23 这层目录
             String funccodeDatePath = CleanFileTool.cleanDatePathForOnly(funcCodeFullPath, photo.getImgUrl());
 
+            if(funccodeDatePath!=null && (funccodeDatePath.contains("//") ||funccodeDatePath.contains("\\\\"))){
+                funccodeDatePath.replaceAll("//","/");
+                funccodeDatePath.replaceAll("\\\\","\\");
+            }
+
             // 开始move文件
             // 在原绝对路径基础上加上FUNC_CODE目录
             String newAbsPath = "";
@@ -121,7 +133,11 @@ public class DoCleanUtil {
             if (IS_BAK_IMG){
                 String fileName = CleanFileTool.getFileNamePath(absolutePath);
                 String fcunccodeDate = funccodeDatePath.replace(PHOTO_PATH,"");
+
                 String bakDestPath = BAK_IMG_PATH + File.separator +  fcunccodeDate + File.separator + fileName;
+                // 创建备份的全路径
+                File bakDestPathFile = new File(BAK_IMG_PATH + File.separator +  fcunccodeDate);
+                bakDestPathFile.mkdir();
                 CleanFileTool.copyPhoto(absolutePath,bakDestPath);
             }
 
@@ -151,14 +167,10 @@ public class DoCleanUtil {
                     } else if (IS_DELETE_DB){// 是否删除数据库记录
                         photoService.deletePhoto(photo);// 删除VISIT_PHOTO表记录
                         photoService.deleteRptPhoto(photo);// 删除RPT_PHOTO表记录
-
                     }
-
                 }
-
-
-
             }
+
             return true;
 
 

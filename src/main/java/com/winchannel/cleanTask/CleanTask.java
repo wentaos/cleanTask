@@ -8,11 +8,12 @@ import com.winchannel.utils.cleanUtil.IDPoolPropUtil;
 import com.winchannel.utils.cleanUtil.IDPoolUtil;
 import com.winchannel.utils.cleanUtil.OptionPropUtil;
 import com.winchannel.utils.sysUtils.LogUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,8 +22,8 @@ import java.util.List;
  */
 @Component
 public class CleanTask {
-    private LogUtil logger = new LogUtil().log(CleanTask.class);
-
+    private Logger logger = LoggerFactory.getLogger(CleanTask.class);
+    private static Logger logger1 = LoggerFactory.getLogger(CleanTask.class);
     @Autowired
     private  DistId distId;
 
@@ -43,23 +44,31 @@ public class CleanTask {
     String ID_INFO_PATH = OptionPropUtil.ID_INFO_PATH();
 
 
+    static {
+        logger1.debug("Ready into Task！");
+    }
+
     @Scheduled(cron = "${RUN_CRON}")
     public void cleanTask(){
 
+        logger.info("Into program！Start！");
         // 是否需要备份图片
         boolean IS_BAK_IMG = OptionPropUtil.IS_BAK_IMG();
+
         if(IS_BAK_IMG){
+            logger.info("IS_BAK_IMG=" + IS_BAK_IMG );
             // 创建备份目录
             String BAK_IMG_PATH = OptionPropUtil.BAK_IMG_PATH();
             CleanFileTool.createPath(BAK_IMG_PATH);
         }
 
+        logger.info("Thread num is "+THREAD_NUM);
 
         // 设置新的历史线程数
         IDPoolPropUtil.setHIS_THREAD_NUM(THREAD_NUM);
         // 需要探测是否配置了 ID_INFO_PATH
         if(ID_INFO_PATH==null || ID_INFO_PATH.trim().length()==0){
-            throw new NoSuchFieldError("没有找到对应的 ID_INFO_PATH配置！");
+            throw new NoSuchFieldError("Not find ID_INFO_PATH config！");
         }
 
         /**
@@ -78,6 +87,7 @@ public class CleanTask {
         } else if (THREAD_NUM==HIS_THREAD_NUM){// 相等，直接分配
             // 需要先指定最大ID
             Long HIS_MAX_ID = IDPoolPropUtil.getHisMaxId();
+            logger.info("HIS_MAX_ID is "+HIS_MAX_ID);
             // 放到内存中
             Memory.DIST_MAX_ID = HIS_MAX_ID!=null?HIS_MAX_ID:0L;
 

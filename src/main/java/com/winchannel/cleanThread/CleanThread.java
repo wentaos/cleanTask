@@ -7,7 +7,10 @@ import com.winchannel.service.impl.PhotoServiceImpl;
 import com.winchannel.utils.cleanUtil.DoCleanUtil;
 import com.winchannel.utils.cleanUtil.IDPoolPropUtil;
 import com.winchannel.utils.cleanUtil.OptionPropUtil;
+import com.winchannel.utils.sysUtils.LogUtil;
 import com.winchannel.utils.sysUtils.SpringContextUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -20,6 +23,7 @@ import java.util.List;
 @Component("cleanThread")
 @Scope("prototype")// 多例
 public class CleanThread extends Thread{
+    private Logger logger = LoggerFactory.getLogger(CleanThread.class);
 
     @Autowired
     private PhotoService photoService = (PhotoServiceImpl)SpringContextUtil.getBean("photoService");
@@ -60,6 +64,9 @@ public class CleanThread extends Thread{
 
     @Override
     public void run(){
+
+        logger.info("开始执行线程！"+this.getName());
+
         // 一个轮询完成标识
         this.isComplete = false;
         // 线程停止标识
@@ -73,6 +80,9 @@ public class CleanThread extends Thread{
             }
             // 开始执行前将分配的ID记录到 Prop文件run()中首次保存，从0开始
             IDPoolPropUtil.saveID_POOL(threadName,0,ID_POOL);
+
+            logger.info(this.getName()+" ===》 ID_POOL"+ID_POOL);
+
             int id_pool_save_point_num = 0;
             // 根据ID_POOL进行处理数据
             for (int i=0;i<ID_POOL.size();i++) {
@@ -86,10 +96,12 @@ public class CleanThread extends Thread{
                 if (cleanSHUN) {
                     id_pool_save_point_num++;
                 }
+
                 if (id_pool_save_point_num % LOOP_SAVE_COUNT == 0) {
                     IDPoolPropUtil.saveID_POOL(threadName, i+1, ID_POOL);
                     id_pool_save_point_num = 0;// 重新计算
                 }
+
             }
             // 处理好一个ID_POOL轮询保存一次ID_POOL，记录信息表示已处理好了这次ID_POOL
             IDPoolPropUtil.saveID_POOL(threadName, null, null);// ID_POOL设置为null，为记录数据为空值

@@ -101,6 +101,8 @@ public class CleanFileTool {
      */
     public static boolean isTurePath(String PATH_SEP,String imgUrl,String trueFuncCode){
 
+        logger.info("isTurePath ==> imgUrl : "+imgUrl);
+
         // 为空直接忽略掉
         if(imgUrl==null || imgUrl.trim().length()==0){
             return true;
@@ -108,37 +110,60 @@ public class CleanFileTool {
 
         String date = getDatePathFromUrl(imgUrl);
 
-        String afterStr = imgUrl.split("photos"+PATH_SEP)[1];
+        // 使用 目的路径匹配，将目的路径转化成带有dot2B这种分隔符的短路径
+        boolean IS_ONLY_PATH = OptionPropUtil.IS_ONLY_PATH();
+        String destPath = OptionPropUtil.PHOTO_PATH();
+        if(IS_ONLY_PATH){
+            destPath = OptionPropUtil.ONLY_DIST_PATH();
+            // /media/dot2B efex dot2B app02 dot2B resources dot2B photos dot2B
+        }
+        // 转换路径
+        destPath = "/media/"+destPath.replaceAll("/",PATH_SEP)+"dot2B";
+        if(destPath.contains("dot2Bdot2B")){
+            destPath = destPath.replaceAll("dot2Bdot2B","dot2B");
+        }
 
-        String[] arr = afterStr.split(PATH_SEP);
+        String afterStr = "";
+        // 在imgUrl中判断是否包含 FUNC_CODE在内的路径
+        if(imgUrl.contains(destPath+trueFuncCode)){
+            return true;
+            /*afterStr = imgUrl.replace(destPath+trueFuncCode+PATH_SEP,"");
 
-        int flag_num = arr.length-1;// afterStr中 dot2B 的个数
-        if(flag_num>=2){// 可能有错误路径 F0sdsadas_dsdafasddfsad/date/xxx.jpg
+            String[] arr = afterStr.split(PATH_SEP);
 
-            if(date!=null && date.trim().length()>0) {
-                String funccode_id = afterStr.split(PATH_SEP + date)[0];
-                // 日期前面的目录 不是错误的目录，和正确的FUNC_CODE一样
-                if (funccode_id.toLowerCase().trim().startsWith((trueFuncCode.toLowerCase().trim()))
-                        && funccode_id.trim().length()<32){// 太长就是错误的路径
-                    return true;
-                }else {
+            int flag_num = arr.length-1;// afterStr中 dot2B 的个数
+            if(flag_num>=2){// 可能有错误路径 F0sdsadas_dsdafasddfsad/date/xxx.jpg
+
+                if(date!=null && date.trim().length()>0) {
+                    String funccode_id = afterStr.split(PATH_SEP + date)[0];
+                    // 日期前面的目录 不是错误的目录，和正确的FUNC_CODE一样
+                    if (funccode_id.toLowerCase().trim().startsWith((trueFuncCode.toLowerCase().trim()))
+                            && funccode_id.trim().length()<32){// 太长就是错误的路径
+                        return true;
+                    }else {
+                        return false;
+                    }
+
+                }
+
+            }else if(flag_num==1){// afterStr 说明剩下的格式是: date/xxx.jpg
+
+                // 先得到日期：如果防寒日期，则不是正确的路径格式
+                String date1 = getDatePathFromUrl(afterStr);
+                if(date1!=null){
                     return false;
                 }
 
-            }
+            }else{// 其他的不做考虑，认为是正确的
+                return true;
+            }*/
 
-        }else if(flag_num==1){// afterStr 说明剩下的格式是: date/xxx.jpg
-
-            // 先得到日期：如果防寒日期，则不是正确的路径格式
-            String date1 = getDatePathFromUrl(afterStr);
-            if(date1!=null){
-                return false;
-            }
-
-        }else{// 其他的不做考虑，认为是正确的
-            return true;
+        }else{// 不包含就是错误的，没有处理的
+            return false;
         }
-        return true;
+
+//        String afterStr = imgUrl.split("photos"+PATH_SEP)[1];
+
     }
 
 
@@ -501,7 +526,7 @@ public class CleanFileTool {
             // 如果存在 再执行操作
             if (photo.exists()) {
                 InputStream in = new FileInputStream(sourcePath); //读入原文件
-                OutputStream out = new FileOutputStream(destPath);
+                OutputStream out = new FileOutputStream(new File(destPath));
                 byte[] buffer = new byte[1024 * 10];
                 int len = 0;
                 while ((len = in.read(buffer)) != -1) {
