@@ -79,7 +79,7 @@ public class DoCleanUtil {
         // 如果需要移动到某一个固定的目录路径中，就不需要单独去获取FUNC_CODE了，直接移动到这个独立的目录路径即可
         // 根据Photo的IMG_ID 去查询其他表中的 FUNC_CODE信息
         String FUNC_CODE = "";
-        if(!IS_ONLY_PATH){
+        if(!IS_ONLY_PATH && !IS_DELETE_IMG){// 如果是删除数据的就不用获取了
             synchronized (DoCleanUtil.class){
                 // 使用新版本查询方法
                 FUNC_CODE = photoService.getFuncCodeByXml(photo);
@@ -93,9 +93,25 @@ public class DoCleanUtil {
         }
 
 
-        // // 当使用独立目录 且 独立目录不在原有的photos目录中时
-        // 这时候需要将图片移动到新的路径中
-        if (FUNC_CODE !=null && IS_ONLY_PATH && ONLY_DIST_PATH!=null
+
+        // 删除磁盘数据文件
+        if(IS_DELETE_IMG){
+            // 直接根据绝对路径删除磁盘文件和remove数据库记录
+            String DB_PATH_SEP = OptionPropUtil.DB_PATH_SEPARATOR();
+            String sysSourcePath = absolutePath.replace(DB_PATH_SEP, File.separator);// 换成系统的分隔符
+            boolean isOK = CleanFileTool.deletePhoto(sysSourcePath);
+
+            // 删除数据库
+            if (IS_DELETE_DB){// 是否删除数据库记录
+                photoService.deletePhoto(photo);// 删除VISIT_PHOTO表记录
+                photoService.deleteRptPhoto(photo);// 删除RPT_PHOTO表记录
+            }
+
+            return isOK;
+
+            // // 当使用独立目录 且 独立目录不在原有的photos目录中时
+            // 这时候需要将图片移动到新的路径中
+        }else if (FUNC_CODE !=null && IS_ONLY_PATH && ONLY_DIST_PATH!=null
                 &&
                 (!ONLY_DIST_PATH.contains(PHOTO_PATH) ||  !CleanFileTool.compPathIsSame(ONLY_DIST_PATH, PHOTO_PATH + File.separator + FUNC_CODE) )
                 ){
@@ -176,13 +192,13 @@ public class DoCleanUtil {
 
         } else if (FUNC_CODE != null && FUNC_CODE.length() > 0) { // 获取到 FUNC_CODE | 当使用独立目录时，检查是否是常规的在原photos目录中 固定某个FUNC_CODE的目录
 
+
             // 判断该Photo是否已经是一个符合规则的路径
             photo.setFuncCode(FUNC_CODE);
             if (CleanFileTool.isTruePath2(photo)) {
                 // 如果是符合规则的路径，就继续下一个Photo
                 return true;
             }
-
 
             // clean FUNC_CODE path 得到 D:/Photo_Test/photos/FUNC_CODE 这层目录
             @SuppressWarnings("unused")
