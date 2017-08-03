@@ -104,7 +104,7 @@ public class DoCleanUtil {
             // 删除数据库
             if (IS_DELETE_DB){// 是否删除数据库记录
                 photoService.deletePhoto(photo);// 删除VISIT_PHOTO表记录
-                photoService.deleteRptPhoto(photo);// 删除RPT_PHOTO表记录
+                // photoService.deleteRptPhoto(photo);// 删除RPT_PHOTO表记录
             }
 
             return isOK;
@@ -182,7 +182,7 @@ public class DoCleanUtil {
                         photoService.updateRptPhoto(photo);// 修改RPT_PHOTO表(一个字段imgUrl)
                     } else if (IS_DELETE_DB){// 是否删除数据库记录
                         photoService.deletePhoto(photo);// 删除VISIT_PHOTO表记录
-                        photoService.deleteRptPhoto(photo);// 删除RPT_PHOTO表记录
+                        // photoService.deleteRptPhoto(photo);// 删除RPT_PHOTO表记录
                     }
                 }
             }
@@ -248,7 +248,7 @@ public class DoCleanUtil {
                         photoService.updateRptPhoto(photo);// 修改RPT_PHOTO表(一个字段imgUrl)
                     } else if (IS_DELETE_DB){// 是否删除数据库记录
                         photoService.deletePhoto(photo);// 删除VISIT_PHOTO表记录
-                        photoService.deleteRptPhoto(photo);// 删除RPT_PHOTO表记录
+                        // photoService.deleteRptPhoto(photo);// 删除RPT_PHOTO表记录
 
                     }
 

@@ -47,6 +47,9 @@ public class PhotoDaoImpl implements PhotoDao {
 
         logger.info("原 baseQuerySql:"+baseQuerySql);
 
+        baseQuerySql = "select MAX(ID) maxId from ("+baseQuerySql+") as bt" ;
+
+        /*
         // 获取到第一个from
         Pattern p = Pattern.compile("[Ff][Rr][Oo][Mm]");
         Matcher m = p.matcher(baseQuerySql);
@@ -55,9 +58,12 @@ public class PhotoDaoImpl implements PhotoDao {
             int start = m.start();
             String sqlTail = baseQuerySql.substring(start);
             baseQuerySql = "SELECT MAX(ID) maxId  "+sqlTail;
+
+            baseQuerySql = "select MAX(ID) maxId from ("+baseQuerySql+") as bt" ;
+
         }else {
             throw new RuntimeException("SQL 语法有毛病啊！缺少FROM");
-        }
+        }*/
 
         logger.info("处理后 baseQuerySql:"+baseQuerySql);
 

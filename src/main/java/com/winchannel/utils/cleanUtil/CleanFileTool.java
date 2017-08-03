@@ -551,16 +551,16 @@ public class CleanFileTool {
     /**
      * 文件删除
      */
-    public static boolean deletePhoto(String sourcePath) {
+     public static boolean deletePhoto(String sourcePath) {
         File photo = new File(sourcePath);
         if (photo.exists()) {
-            System.out.print(sourcePath);
             photo.delete();
             return true;
         } else if (!photo.isAbsolute()) {// 不是绝对路径删除不了
             return false;
+        } else{
+            return true;
         }
-        return false;
     }
 
     /**

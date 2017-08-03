@@ -14,7 +14,7 @@ import java.util.*;
  */
 public class FunccodeXmlUtil {
 
-    private static String resourceFilePath = "spring"+File.separator+"config"+File.separator+"func_code_sql.xml";
+    private static String resourceFilePath = "spring/config/func_code_sql.xml";
     private static InputStream resourceInput;
     private static String TYPE_SPE = "SPE";
     private static String TYPE_RPT = "RPT";

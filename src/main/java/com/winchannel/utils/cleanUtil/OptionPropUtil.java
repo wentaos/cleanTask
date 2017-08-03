@@ -16,7 +16,7 @@ public class OptionPropUtil {
     /**
      * 资源文件
      */
-    private static String resourceFilePath = "spring"+File.separator+"config"+File.separator+"option.properties";
+    private static String resourceFilePath = "spring/config/option.properties";
     private static Properties prop = new Properties();
 
 
